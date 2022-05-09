@@ -8,13 +8,15 @@ func BenchmarkIter(b *testing.B) {
 			ints      = Ints(1, 1)
 			first1000 = FirstN(ints, 1000)
 			odds      = Filter(first1000, func(x int) bool { return x%2 == 1 })
-			squares   = Map(odds, func(x int) int { return x * x })
-			sums      = Accum(squares, func(x, y int) int { return x + y })
-			sum       = LastN(sums, 1)
+			squares   = Map(odds, func(x int) (int, error) { return x * x, nil })
+			sums      = Accum(squares, func(x, y int) (int, error) { return x + y, nil })
 		)
-		ok := sum.Next()
-		if !ok {
-			b.Fatal("no value in sum iterator")
+		sum, err := LastN(sums, 1)
+		if err != nil {
+			b.Fatal(err)
+		}
+		if len(sum) != 1 {
+			b.Fatalf("len(sum) = %d, want 1", len(sum))
 		}
 	}
 }

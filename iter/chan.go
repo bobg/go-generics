@@ -4,15 +4,22 @@ import "context"
 
 type chanIter[T any] struct {
 	ch    <-chan T
-	done  <-chan struct{}
+	ctx   context.Context
 	latch T
+	err   error
 }
 
 var _ Of[any] = &chanIter[any]{}
 
 func (ch *chanIter[T]) Next() bool {
+	var done <-chan struct{}
+	if ch.ctx != nil {
+		done = ch.ctx.Done()
+	}
+
 	select {
-	case <-ch.done:
+	case <-done:
+		ch.err = ch.ctx.Err()
 		return false
 	case val, ok := <-ch.ch:
 		if !ok {
@@ -27,34 +34,52 @@ func (ch *chanIter[T]) Val() T {
 	return ch.latch
 }
 
+func (ch *chanIter[T]) Err() error {
+	return ch.err
+}
+
 func FromChan[T any](ch <-chan T) Of[T] {
 	return &chanIter[T]{ch: ch}
 }
 
 func FromChanContext[T any](ctx context.Context, ch <-chan T) Of[T] {
-	return &chanIter[T]{ch: ch, done: ctx.Done()}
+	return &chanIter[T]{ch: ch, ctx: ctx}
 }
 
-func ToChan[T any](inp Of[T]) <-chan T {
-	return toChan(inp, nil)
+func ToChan[T any](inp Of[T]) (<-chan T, func() error) {
+	return toChan(nil, inp)
 }
 
-func ToChanContext[T any](ctx context.Context, inp Of[T]) <-chan T {
-	return toChan(inp, ctx.Done())
+func ToChanContext[T any](ctx context.Context, inp Of[T]) (<-chan T, func() error) {
+	return toChan(ctx, inp)
 }
 
-func toChan[T any](inp Of[T], done <-chan struct{}) <-chan T {
-	ch := make(chan T)
+// ctx can be nil
+func toChan[T any](ctx context.Context, inp Of[T]) (<-chan T, func() error) {
+	var (
+		ch    = make(chan T)
+		err   error
+		errfn = func() error { return err }
+		done  <-chan struct{}
+	)
+
+	if ctx != nil {
+		done = ctx.Done()
+	}
+
 	go func() {
 		defer close(ch)
 
 		for inp.Next() {
 			select {
 			case <-done:
+				err = ctx.Err()
 				return
 			case ch <- inp.Val():
 			}
 		}
+		err = inp.Err()
 	}()
-	return ch
+
+	return ch, errfn
 }

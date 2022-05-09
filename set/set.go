@@ -4,6 +4,10 @@ package set
 import "github.com/bobg/go-generics/iter"
 
 // Of is a set of elements of type T.
+// It is called "Of" so that when qualified with this package name
+// and instantiated with a member type,
+// it reads naturally: e.g., set.Of[int].
+//
 // The zero value of Of is not safe for use.
 // Create one with New instead.
 type Of[T comparable] map[T]struct{}
@@ -58,11 +62,15 @@ func (s Of[T]) Each(f func(T) error) error {
 }
 
 func (s Of[T]) Iter() iter.Of[T] {
-	return iter.Map(iter.FromMap(s), func(pair iter.Pair[T, struct{}]) T { return pair.X })
+	return iter.Map(iter.FromMap(s), func(pair iter.Pair[T, struct{}]) (T, error) { return pair.X, nil })
 }
 
 func (s Of[T]) Slice() []T {
-	return iter.ToSlice(s.Iter())
+	result := make([]T, 0, len(s))
+	for val := range s {
+		result = append(result, val)
+	}
+	return result
 }
 
 // Intersect produces a new set containing only items that appear in all the given sets.

@@ -12,7 +12,10 @@ func TestGomaps(t *testing.T) {
 		"three": 3,
 	}
 	iter := FromMap(inp)
-	got := ToMap(iter)
+	got, err := ToMap(iter)
+	if err != nil {
+		t.Fatal(err)
+	}
 	if !reflect.DeepEqual(got, inp) {
 		t.Errorf("got %v, want [one:1 two:2 three:3]", got)
 	}

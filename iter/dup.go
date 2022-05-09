@@ -13,7 +13,7 @@ func Dup[T any](inp Of[T], n int) []Of[T] {
 
 	for i := 0; i < n; i++ {
 		i := i // Go loop-var pitfall
-		result = append(result, Gen(func() (T, bool) {
+		result = append(result, Gen(func() (T, bool, error) {
 			mu.Lock()
 			defer mu.Unlock()
 
@@ -24,7 +24,7 @@ func Dup[T any](inp Of[T], n int) []Of[T] {
 					bufEnd++
 				} else {
 					var zero T
-					return zero, false
+					return zero, false, inp.Err()
 				}
 			}
 			val := buf[offsets[i]-bufOffset]
@@ -38,7 +38,7 @@ func Dup[T any](inp Of[T], n int) []Of[T] {
 			buf = buf[minOffset-bufOffset:]
 			bufOffset = minOffset
 
-			return val, true
+			return val, true, nil
 		}))
 	}
 

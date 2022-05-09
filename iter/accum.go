@@ -7,7 +7,7 @@ package iter
 //   out[0] == inp[0]
 // and
 //   out[i+1] == f(out[i], inp[i+1])
-func Accum[T any](inp Of[T], f func(T, T) T) Of[T] {
+func Accum[T any](inp Of[T], f func(T, T) (T, error)) Of[T] {
 	return &accumIter[T]{
 		inp:   inp,
 		f:     f,
@@ -17,9 +17,10 @@ func Accum[T any](inp Of[T], f func(T, T) T) Of[T] {
 
 type accumIter[T any] struct {
 	inp   Of[T]
-	f     func(T, T) T
+	f     func(T, T) (T, error)
 	first bool
 	val   T
+	err   error
 }
 
 func (a *accumIter[T]) Next() bool {
@@ -28,13 +29,18 @@ func (a *accumIter[T]) Next() bool {
 			a.val = a.inp.Val()
 			a.first = false
 		} else {
-			a.val = a.f(a.val, a.inp.Val())
+			a.val, a.err = a.f(a.val, a.inp.Val())
 		}
-		return true
+		return a.err == nil
 	}
+	a.err = a.inp.Err()
 	return false
 }
 
 func (a *accumIter[T]) Val() T {
 	return a.val
+}
+
+func (a *accumIter[T]) Err() error {
+	return a.err
 }

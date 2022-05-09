@@ -19,4 +19,8 @@ type Of[T any] interface {
 	// with no intervening call to Next
 	// should return the same value.
 	Val() T
+
+	// Err returns the error that this iterator's source encountered during iteration, if any.
+	// It may be called only after Next returns false.
+	Err() error
 }

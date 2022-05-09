@@ -24,6 +24,10 @@ func (f *filterIter[T]) Val() T {
 	return f.val
 }
 
+func (f *filterIter[T]) Err() error {
+	return f.inp.Err()
+}
+
 func SkipUntil[T any](inp Of[T], f func(T) bool) Of[T] {
 	skipping := true
 	return Filter(inp, func(val T) bool {

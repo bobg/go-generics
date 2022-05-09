@@ -4,7 +4,7 @@ import "testing"
 
 func TestToChan(t *testing.T) {
 	ints := Ints(0, 1)
-	ch := ToChan(ints)
+	ch, errfn := ToChan(ints)
 	want := 0
 	for got := range ch {
 		if got != want {
@@ -14,5 +14,8 @@ func TestToChan(t *testing.T) {
 		if want > 10 {
 			break
 		}
+	}
+	if err := errfn(); err != nil {
+		t.Fatal(err)
 	}
 }

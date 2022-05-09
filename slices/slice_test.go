@@ -193,3 +193,38 @@ func TestSliceTo(t *testing.T) {
 		})
 	}
 }
+
+func TestRotate(t *testing.T) {
+	cases := []struct {
+		inp  []int
+		n    int
+		want []int
+	}{{
+		inp:  []int{4, 5, 1, 2, 3},
+		n:    -2,
+		want: []int{1, 2, 3, 4, 5},
+	}, {
+		inp:  []int{4, 5, 1, 2, 3},
+		n:    -7,
+		want: []int{1, 2, 3, 4, 5},
+	}, {
+		inp:  []int{4, 5, 1, 2, 3},
+		n:    3,
+		want: []int{1, 2, 3, 4, 5},
+	}, {
+		inp:  []int{4, 5, 1, 2, 3},
+		n:    8,
+		want: []int{1, 2, 3, 4, 5},
+	}}
+
+	for i, tc := range cases {
+		t.Run(fmt.Sprintf("case_%02d", i+1), func(t *testing.T) {
+			got := make([]int, len(tc.inp))
+			copy(got, tc.inp)
+			Rotate(got, tc.n)
+			if !reflect.DeepEqual(got, tc.want) {
+				t.Errorf("got %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
