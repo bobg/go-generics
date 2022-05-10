@@ -1,6 +1,9 @@
 package iter
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestToChan(t *testing.T) {
 	ints := Ints(0, 1)
@@ -17,5 +20,23 @@ func TestToChan(t *testing.T) {
 	}
 	if err := errfn(); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestFromChan(t *testing.T) {
+	ch := make(chan int)
+	go func() {
+		for i := 1; i <= 10; i++ {
+			ch <- i
+		}
+		close(ch)
+	}()
+	it := FromChan(ch)
+	ints, err := ToSlice(it)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(ints, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}) {
+		t.Errorf("got %v, want 1 through 10", ints)
 	}
 }

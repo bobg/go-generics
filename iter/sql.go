@@ -19,53 +19,52 @@ type QueryerContext interface {
 // as the values being queried.
 // The values produced by the iterator will be instances of that struct type,
 // with fields populated by the queried values.
-func SQL[T any](ctx context.Context, db QueryerContext, query string, args ...any) (Of[T], func() error) {
+func SQL[T any](ctx context.Context, db QueryerContext, query string, args ...any) (Of[T], error) {
 	var t T
 	tt := reflect.TypeOf(t)
 	if tt.Kind() != reflect.Struct {
-		return nil, func() error { return fmt.Errorf("type parameter to SQL has %s kind but must be struct", tt.Kind()) }
+		return nil, fmt.Errorf("type parameter to SQL has %s kind but must be struct", tt.Kind())
 	}
 	nfields := tt.NumField()
 
-	var (
-		err   error
-		errfn = func() error { return err }
-	)
-
 	rows, err := db.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, errfn
+		return nil, fmt.Errorf("executing query: %w", err)
 	}
 
-	ch := make(chan T)
-	go func() {
+	res := Go(ctx, func(send func(T) error) error {
 		defer rows.Close()
-		defer close(ch)
 
 		for rows.Next() {
 			var (
-				row    T
-				rowval = reflect.ValueOf(row)
-				ptrs   = make([]any, 0, nfields)
+				row T
+
+				// Note: We cannot use:
+				//   rowval = reflect.ValueOf(row)
+				// because the result is not addressable.
+				// We have to let the reflect package create its own instance of T.
+
+				rowtype   = reflect.TypeOf(row)
+				rowptrval = reflect.New(rowtype)
+				rowval    = rowptrval.Elem()
+				ptrs      = make([]any, 0, nfields)
 			)
+
 			for i := 0; i < nfields; i++ {
 				addr := rowval.Field(i).Addr()
 				ptrs = append(ptrs, addr.Interface())
 			}
 			err = rows.Scan(ptrs...)
 			if err != nil {
-				return
+				return fmt.Errorf("scanning row: %w", err)
 			}
-			select {
-			case <-ctx.Done():
-				err = ctx.Err()
-				return
-			case ch <- row:
+			err = send(rowval.Interface().(T))
+			if err != nil {
+				return fmt.Errorf("sending row: %w", err)
 			}
 		}
+		return rows.Err()
+	})
 
-		err = rows.Err()
-	}()
-
-	return FromChanContext(ctx, ch), errfn
+	return res, nil
 }

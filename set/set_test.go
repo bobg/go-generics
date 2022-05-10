@@ -43,4 +43,26 @@ func TestSet(t *testing.T) {
 	if !reflect.DeepEqual(d, Of[int](map[int]struct{}{1: {}, 2: {}, 3: {}, 4: {}})) {
 		t.Errorf("got %v, want [1 2 3 4]", d)
 	}
+
+	var (
+		it = s.Iter()
+		m  = make(map[int]struct{})
+	)
+	for it.Next() {
+		m[it.Val()] = struct{}{}
+	}
+	if err = it.Err(); err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(m, map[int]struct{}{1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}}) {
+		t.Errorf("got %v, want [1 2 3 4 5 6]", m)
+	}
+
+	m = make(map[int]struct{})
+	for _, val := range s.Slice() {
+		m[val] = struct{}{}
+	}
+	if !reflect.DeepEqual(m, map[int]struct{}{1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}}) {
+		t.Errorf("got %v, want [1 2 3 4 5 6]", m)
+	}
 }

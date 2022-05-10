@@ -83,3 +83,23 @@ func toChan[T any](ctx context.Context, inp Of[T]) (<-chan T, func() error) {
 
 	return ch, errfn
 }
+
+func Go[T any](ctx context.Context, f func(send func(T) error) error) Of[T] {
+	var (
+		ch  = make(chan T)
+		res = &chanIter[T]{ch: ch, ctx: ctx}
+	)
+	go func() {
+		send := func(val T) error {
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			case ch <- val:
+			}
+			return nil
+		}
+		res.err = f(send)
+		close(ch)
+	}()
+	return res
+}
