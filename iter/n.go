@@ -2,6 +2,10 @@ package iter
 
 import "github.com/bobg/go-generics/slices"
 
+// FirstN produces an iterator containing the first n elements of the input
+// (or all of the input, if there are fewer than n elements).
+// Remaining elements of the input are not consumed.
+// It is the caller's responsibility to release any associated resources.
 func FirstN[T any](inp Of[T], n int) Of[T] {
 	return Gen(func() (T, bool, error) {
 		var zero T
@@ -16,6 +20,10 @@ func FirstN[T any](inp Of[T], n int) Of[T] {
 	})
 }
 
+// LastN produces a slice containing the last n elements of the input iterator
+// (or all of the input, if there are fewer than n elements).
+// There is no guarantee that any elements will ever be produced:
+// the input iterator may be infinite!
 func LastN[T any](inp Of[T], n int) ([]T, error) {
 	var (
 		buf   = make([]T, 0, n)
@@ -37,6 +45,8 @@ func LastN[T any](inp Of[T], n int) ([]T, error) {
 	return buf, nil
 }
 
+// SkipN copies the input iterator to the output,
+// skipping the first N elements.
 func SkipN[T any](inp Of[T], n int) Of[T] {
 	first := true
 

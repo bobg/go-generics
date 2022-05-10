@@ -1,5 +1,6 @@
 package iter
 
+// Concat concatenates the members of the input iterators.
 func Concat[T any](inps ...Of[T]) Of[T] {
 	return &concatIter[T]{inps: inps}
 }

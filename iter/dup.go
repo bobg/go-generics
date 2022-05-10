@@ -2,6 +2,13 @@ package iter
 
 import "sync"
 
+// Dup duplicates the contents of an iterator,
+// producing n new iterators,
+// each containing the members of the original.
+//
+// An internal buffer grows to roughly the size
+// of the difference between the output iterator that is farthest ahead in the stream,
+// and the one that is farthest behind.
 func Dup[T any](inp Of[T], n int) []Of[T] {
 	var (
 		mu        sync.Mutex

@@ -1,5 +1,10 @@
 package iter
 
+// Gen produces an iterator of values obtained by repeatedly calling f.
+// If f returns an error,
+// iteration stops and the error is available via the iterators Err method.
+// Otherwise, each call to f should return a value and a true boolean.
+// When f returns a false boolean, it signals the normal end of iteration.
 func Gen[T any](f func() (T, bool, error)) Of[T] {
 	return &genIter[T]{f: f}
 }
@@ -33,6 +38,8 @@ func (g *genIter[T]) Err() error {
 	return g.err
 }
 
+// Ints produces an infinite iterator over integers beginning at start,
+// with each element increasing by delta.
 func Ints(start, delta int) Of[int] {
 	n := start
 	return Gen(func() (int, bool, error) {
@@ -42,6 +49,7 @@ func Ints(start, delta int) Of[int] {
 	})
 }
 
+// Repeat produces an infinite iterator repeatedly containing the given value.
 func Repeat[T any](val T) Of[T] {
 	return Gen(func() (T, bool, error) { return val, true, nil })
 }

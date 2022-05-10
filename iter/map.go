@@ -1,5 +1,8 @@
 package iter
 
+// Map produces an iterator of values transformed from an input iterator by a mapping function.
+// If the mapping function returns an error,
+// iteration stops and the error is available via the output iterator's Err method.
 func Map[T, U any](inp Of[T], f func(T) (U, error)) Of[U] {
 	return &mapIter[T, U]{inp: inp, f: f}
 }

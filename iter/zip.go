@@ -1,5 +1,8 @@
 package iter
 
+// Zip takes two iterators and produces a new iterator containing pairs of corresponding elements.
+// If one input iterator ends before the other,
+// Zip produces zero values of the appropriate type in constructing pairs.
 func Zip[T, U any](t Of[T], u Of[U]) Of[Pair[T, U]] {
 	return Gen(func() (Pair[T, U], bool, error) {
 		var (
@@ -18,7 +21,7 @@ func Zip[T, U any](t Of[T], u Of[U]) Of[Pair[T, U]] {
 			err = u.Err()
 		}
 
-		if !okx && !oky {
+		if (!okx && !oky) || err != nil {
 			return Pair[T, U]{}, false, err
 		}
 		if okx {
@@ -27,6 +30,6 @@ func Zip[T, U any](t Of[T], u Of[U]) Of[Pair[T, U]] {
 		if oky {
 			y = u.Val()
 		}
-		return Pair[T, U]{X: x, Y: y}, true, err
+		return Pair[T, U]{X: x, Y: y}, true, nil
 	})
 }

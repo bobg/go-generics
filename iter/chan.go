@@ -38,18 +38,32 @@ func (ch *chanIter[T]) Err() error {
 	return ch.err
 }
 
+// FromChan copies a Go channel to an iterator.
 func FromChan[T any](ch <-chan T) Of[T] {
 	return &chanIter[T]{ch: ch}
 }
 
+// FromChanContext copies a Go channel to an iterator.
+// Copying will end early if the context is canceled
+// (and the iterator's Err() function will indicate that).
 func FromChanContext[T any](ctx context.Context, ch <-chan T) Of[T] {
 	return &chanIter[T]{ch: ch, ctx: ctx}
 }
 
+// ToChan creates a Go channel and copies the contents of an iterator to it.
+// The second return value is a function that may be called
+// after the channel is closed
+// to inspect any error that occurred.
 func ToChan[T any](inp Of[T]) (<-chan T, func() error) {
 	return toChan(nil, inp)
 }
 
+// ToChanContext creates a Go channel and copies the contents of an iterator to it.
+// The second return value is a function that may be called
+// after the channel is closed
+// to inspect any error that occurred.
+// The channel will close early if the context is canceled
+// (and the error-returning function will indicate that).
 func ToChanContext[T any](ctx context.Context, inp Of[T]) (<-chan T, func() error) {
 	return toChan(ctx, inp)
 }
@@ -84,6 +98,8 @@ func toChan[T any](ctx context.Context, inp Of[T]) (<-chan T, func() error) {
 	return ch, errfn
 }
 
+// Go runs a function in a goroutine and returns an iterator over the values it produces.
+// The function receives a callback for producing values.
 func Go[T any](ctx context.Context, f func(send func(T) error) error) Of[T] {
 	var (
 		ch  = make(chan T)

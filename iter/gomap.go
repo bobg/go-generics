@@ -1,7 +1,7 @@
 package iter
 
 type goMapIter[K comparable, V any] struct {
-	m        map[K]V
+	m map[K]V
 
 	// Note: keysIter is the result of FromSlice and so its Err() is always nil.
 	keysIter Of[K]
@@ -23,6 +23,7 @@ func (*goMapIter[K, V]) Err() error {
 	return nil
 }
 
+// FromMap produces an iterator of key-value pairs from a Go map.
 func FromMap[K comparable, V any](m map[K]V) Of[Pair[K, V]] {
 	keys := make([]K, 0, len(m))
 	for k := range m {
@@ -34,6 +35,10 @@ func FromMap[K comparable, V any](m map[K]V) Of[Pair[K, V]] {
 	}
 }
 
+// ToMap consumes an iterator of key-value pairs and produces a Go map of the values.
+// All but the last of any pairs with duplicate keys are discarded.
+// Be careful! The input may be very long or even infinite.
+// Consider using FirstN to ensure the input has a reasonable size.
 func ToMap[K comparable, V any](inp Of[Pair[K, V]]) (map[K]V, error) {
 	res := make(map[K]V)
 	for inp.Next() {
