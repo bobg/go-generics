@@ -229,7 +229,7 @@ func Map[T, U any](s []T, f func(int, T) (U, error)) ([]U, error) {
 // Accum accumulates the result of repeatedly applying a function to the elements of a slice.
 //
 // If the slice has length 0, the result is the zero value of type T.
-// If the slice has length 1, the result s[0].
+// If the slice has length 1, the result is s[0].
 // Otherwise, the result is R[len(s)-1],
 // where R[0] is s[0]
 // and R[n+1] = f(R[n], s[n+1]).
