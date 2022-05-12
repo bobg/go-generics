@@ -106,3 +106,22 @@ func ExampleZip() {
 	// c 3
 	// d 0
 }
+
+func ExamplePage() {
+	var (
+		ints    = iter.Ints(1, 1)       // All integers starting at 1
+		first10 = iter.FirstN(ints, 10) // First 10 integers
+	)
+	err := iter.Page(first10, 3, func(page []int, final bool) error {
+		fmt.Println(page, final)
+		return nil
+	})
+	if err != nil {
+		panic(err)
+	}
+	// Output:
+	// [1 2 3] false
+	// [4 5 6] false
+	// [7 8 9] false
+	// [10] true
+}
