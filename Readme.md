@@ -1,4 +1,4 @@
-# Go-generics - Generic slice, set, and iterator utilities for Go
+# Go-generics - Generic slice, set, iterator, and goroutine utilities for Go
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/bobg/go-generics.svg)](https://pkg.go.dev/github.com/bobg/go-generics)
 [![Go Report Card](https://goreportcard.com/badge/github.com/bobg/go-generics)](https://goreportcard.com/report/github.com/bobg/go-generics)
@@ -6,7 +6,8 @@
 [![Coverage Status](https://coveralls.io/repos/github/bobg/go-generics/badge.svg?branch=master)](https://coveralls.io/github/bobg/go-generics?branch=master)
 
 This is go-generics,
-a collection of generic utilities for slices, sets, and iterators in Go.
+a collection of typesafe generic utilities
+for slices, sets, iterators, and goroutine patterns in Go.
 
 # Slices
 
@@ -34,3 +35,12 @@ and produce iterators over the values from function calls and goroutines.
 There is also an iterator over the results of a SQL query,
 plus the usual collection of functions on iterators:
 `Filter`, `Map`, `Concat`, `Accum`, etc.
+
+# Parallel
+
+The `parallel` package contains functions for coordinating parallel workers:
+
+- `Consumers` manages a set of N workers consuming a stream of values produced by the caller.
+- `Producers` manages a set of N workers producing a stream of values consumed by the caller.
+- `Values` concurrently produces a set of N values.
+- `Pool` manages access to a pool of concurrent workers.

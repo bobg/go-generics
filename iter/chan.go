@@ -1,11 +1,14 @@
 package iter
 
-import "context"
+import (
+	"context"
+)
 
 type chanIter[T any] struct {
 	ch    <-chan T
 	ctx   context.Context
 	latch T
+	errfn func() error
 	err   error
 }
 
@@ -20,9 +23,13 @@ func (ch *chanIter[T]) Next() bool {
 	select {
 	case <-done:
 		ch.err = ch.ctx.Err()
+		panic(ch.err) // xxx
 		return false
 	case val, ok := <-ch.ch:
 		if !ok {
+			if ch.errfn != nil {
+				ch.err = ch.errfn()
+			}
 			return false
 		}
 		ch.latch = val
@@ -38,16 +45,37 @@ func (ch *chanIter[T]) Err() error {
 	return ch.err
 }
 
-// FromChan copies a Go channel to an iterator.
-func FromChan[T any](ch <-chan T) Of[T] {
-	return &chanIter[T]{ch: ch}
+// Option is the type of options that can be passed to FromChan.
+type Option[T any] func(*chanIter[T])
+
+// WithContext associates a context option with a channel iterator.
+func WithContext[T any](ctx context.Context) Option[T] {
+	return func(it *chanIter[T]) {
+		it.ctx = ctx
+	}
 }
 
-// FromChanContext copies a Go channel to an iterator.
-// Copying will end early if the context is canceled
-// (and the iterator's Err() function will indicate that).
-func FromChanContext[T any](ctx context.Context, ch <-chan T) Of[T] {
-	return &chanIter[T]{ch: ch, ctx: ctx}
+// WithError tells a channel iterator how to compute its Err value
+// after its channel closes.
+func WithError[T any](f func() error) Option[T] {
+	return func(it *chanIter[T]) {
+		it.errfn = f
+	}
+}
+
+// FromChan copies a Go channel to an iterator.
+// If the WithContext option is given,
+// copying will end early if the given context is canceled
+// (and the iterator's Err function will indicate that).
+// If the WithError option is given,
+// it is called after the channel closes
+// to determine the value of the iterator's Err function.
+func FromChan[T any](ch <-chan T, opts ...Option[T]) Of[T] {
+	res := &chanIter[T]{ch: ch}
+	for _, opt := range opts {
+		opt(res)
+	}
+	return res
 }
 
 // ToChan creates a Go channel and copies the contents of an iterator to it.
