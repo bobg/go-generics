@@ -23,7 +23,6 @@ func (ch *chanIter[T]) Next() bool {
 	select {
 	case <-done:
 		ch.err = ch.ctx.Err()
-		panic(ch.err) // xxx
 		return false
 	case val, ok := <-ch.ch:
 		if !ok {
@@ -127,22 +126,16 @@ func toChan[T any](ctx context.Context, inp Of[T]) (<-chan T, func() error) {
 }
 
 // Go runs a function in a goroutine and returns an iterator over the values it produces.
-// The function receives a callback for producing values.
-func Go[T any](ctx context.Context, f func(send func(T) error) error) Of[T] {
+// The function receives a channel for producing values.
+// The channel closes when the function exits.
+// Any error produced by the function is the value of the iterator's Err method.
+func Go[T any](ctx context.Context, f func(ch chan<- T) error) Of[T] {
 	var (
 		ch  = make(chan T)
 		res = &chanIter[T]{ch: ch, ctx: ctx}
 	)
 	go func() {
-		send := func(val T) error {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			case ch <- val:
-			}
-			return nil
-		}
-		res.err = f(send)
+		res.err = f(ch)
 		close(ch)
 	}()
 	return res

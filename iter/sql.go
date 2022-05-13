@@ -32,7 +32,7 @@ func SQL[T any](ctx context.Context, db QueryerContext, query string, args ...an
 		return nil, fmt.Errorf("executing query: %w", err)
 	}
 
-	res := Go(ctx, func(send func(T) error) error {
+	res := Go(ctx, func(ch chan<- T) error {
 		defer rows.Close()
 
 		for rows.Next() {
@@ -58,9 +58,11 @@ func SQL[T any](ctx context.Context, db QueryerContext, query string, args ...an
 			if err != nil {
 				return fmt.Errorf("scanning row: %w", err)
 			}
-			err = send(rowval.Interface().(T))
-			if err != nil {
-				return fmt.Errorf("sending row: %w", err)
+
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			case ch <- rowval.Interface().(T):
 			}
 		}
 		return rows.Err()

@@ -105,14 +105,15 @@ func Producers[T any](ctx context.Context, n int, f func(context.Context, int, f
 // and the value.
 //
 // The caller receives two callbacks:
-// one for sending a value to the workers,
-// and one for closing that channel
-// (signaling the end of input and causing the workers to exit normally).
+// one for sending a value to the workers via an internal channel,
+// and one for closing that channel,
+// signaling the end of input and causing the workers to exit normally.
 //
-// The callback that the callers uses to produce values for the workers may block until a worker is available to consume the value.
+// The value-sending callback may block until a worker is available to consume the value.
 //
-// An error from any worker cancels them all,
-// whereupon the send-value callback will return an error.
+// An error from any worker cancels them all.
+// This error is returned from the close-channel callback.
+// After any error, the value-sending callback will return an error.
 // (Not the original error, however.
 // For that, the caller should still invoke the close callback.)
 func Consumers[T any](ctx context.Context, n int, f func(context.Context, int, T) error) (func(T) error, func() error) {

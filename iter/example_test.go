@@ -69,14 +69,11 @@ func ExampleDup() {
 }
 
 func ExampleGo() {
-	it := iter.Go(context.Background(), func(send func(val int) error) error {
-		if err := send(1); err != nil {
-			return err
-		}
-		if err := send(2); err != nil {
-			return err
-		}
-		return send(3)
+	it := iter.Go(context.Background(), func(ch chan<- int) error {
+		ch <- 1
+		ch <- 2
+		ch <- 3
+		return nil
 	})
 	slice, err := iter.ToSlice(it)
 	if err != nil {
