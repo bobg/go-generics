@@ -66,3 +66,30 @@ func TestSet(t *testing.T) {
 		t.Errorf("got %v, want [1 2 3 4 5 6]", m)
 	}
 }
+
+func TestEqual(t *testing.T) {
+	var (
+		a = New[int](1, 2, 3)
+		b = New[int](1, 2, 3)
+		c = New[int](1, 3, 5)
+		d = New[int](1, 5, 9)
+	)
+	if !a.Equal(b) {
+		t.Error("got a != b")
+	}
+	if !b.Equal(a) {
+		t.Error("got b != a")
+	}
+	if a.Equal(c) {
+		t.Error("got a == c")
+	}
+	if c.Equal(a) {
+		t.Error("got c == a")
+	}
+	if a.Equal(d) {
+		t.Error("got a == d")
+	}
+	if d.Equal(a) {
+		t.Error("got d == a")
+	}
+}
