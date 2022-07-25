@@ -35,6 +35,15 @@ func FromMap[K comparable, V any](m map[K]V) Of[Pair[K, V]] {
 	}
 }
 
+// FromMapKeys produces an iterator over the keys of a Go map.
+func FromMapKeys[K comparable, V any](m map[K]V) Of[K] {
+	keys := make([]K, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	return FromSlice(keys)
+}
+
 // ToMap consumes an iterator of key-value pairs and produces a Go map of the values.
 // All but the last of any pairs with duplicate keys are discarded.
 // Be careful! The input may be very long or even infinite.

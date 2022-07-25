@@ -302,3 +302,13 @@ func Rotate[T any](s []T, n int) {
 	copy(s[n:], s)
 	copy(s, tmp)
 }
+
+// Dup makes a (shallow) duplicate of the given slice.
+func Dup[T any](s []T) []T {
+	if len(s) == 0 {
+		return nil
+	}
+	result := make([]T, len(s))
+	copy(result, s)
+	return result
+}

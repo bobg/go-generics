@@ -7,7 +7,7 @@
 
 This is go-generics,
 a collection of typesafe generic utilities
-for slices, sets, iterators, and goroutine patterns in Go.
+for slices, maps, sets, iterators, and goroutine patterns in Go.
 
 # Slices
 
@@ -18,6 +18,11 @@ The `slices` package is useful in three ways:
   (for example, Get(s, -1) is the same as s[len(s)-1]); and
 - It includes `Map`, `Filter`, and a few other such functions
   for processing slice elements with callbacks.
+
+# Maps
+
+The `maps` package has a few convenience functions
+for duplicating, inverting, constructing, and iterating over maps.
 
 # Set
 

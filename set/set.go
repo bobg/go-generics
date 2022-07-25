@@ -61,11 +61,18 @@ func (s Of[T]) Each(f func(T) error) error {
 	return nil
 }
 
+// Iter produces an iterator over the members of the set,
+// in an indeterminate order.
 func (s Of[T]) Iter() iter.Of[T] {
-	return iter.Map(iter.FromMap(s), func(pair iter.Pair[T, struct{}]) (T, error) { return pair.X, nil })
+	return iter.FromMapKeys(s)
 }
 
+// Slice produces a new slice of the elements in the set.
+// The slice is in an indeterminate order.
 func (s Of[T]) Slice() []T {
+	if s.Len() == 0 {
+		return nil
+	}
 	result := make([]T, 0, len(s))
 	for val := range s {
 		result = append(result, val)
