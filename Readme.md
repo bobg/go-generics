@@ -22,7 +22,8 @@ The `slices` package is useful in three ways:
 # Maps
 
 The `maps` package has a few convenience functions
-for duplicating, inverting, constructing, and iterating over maps.
+for duplicating, inverting, constructing, and iterating over maps,
+as well as testing their equality.
 
 # Set
 

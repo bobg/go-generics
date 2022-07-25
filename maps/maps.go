@@ -44,3 +44,21 @@ func Invert[K, V comparable](m map[K]V) map[V]K {
 	}
 	return result
 }
+
+// Equal tests whether two maps are equal to each other.
+// The values in the maps must be "comparable."
+func Equal[K, V comparable](a, b map[K]V) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for k, v := range a {
+		v2, ok := b[k]
+		if !ok {
+			return false
+		}
+		if v != v2 {
+			return false
+		}
+	}
+	return true
+}

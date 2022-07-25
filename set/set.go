@@ -48,6 +48,7 @@ func (s Of[T]) Len() int {
 	return len(s)
 }
 
+// Equal tests whether the set has the same membership as another.
 func (s Of[T]) Equal(other Of[T]) bool {
 	if len(s) != len(other) {
 		return false
