@@ -48,6 +48,18 @@ func (s Of[T]) Len() int {
 	return len(s)
 }
 
+func (s Of[T]) Equal(other Of[T]) bool {
+	if len(s) != len(other) {
+		return false
+	}
+	for val := range s {
+		if !other.Has(val) {
+			return false
+		}
+	}
+	return true
+}
+
 // Each calls a function on each element of the set in an indeterminate order.
 // It is safe to add and remove items during a call to Each,
 // but that can affect the sequence of values seen later during the same Each call.
