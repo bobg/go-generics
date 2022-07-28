@@ -1,4 +1,4 @@
-# Go-generics - Generic slice, set, iterator, and goroutine utilities for Go
+# Go-generics - Generic slice, map, set, iterator, and goroutine utilities for Go
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/bobg/go-generics.svg)](https://pkg.go.dev/github.com/bobg/go-generics)
 [![Go Report Card](https://goreportcard.com/badge/github.com/bobg/go-generics)](https://goreportcard.com/report/github.com/bobg/go-generics)
@@ -23,7 +23,7 @@ The `slices` package is useful in three ways:
 
 The `maps` package has a few convenience functions
 for duplicating, inverting, constructing, and iterating over maps,
-as well as testing their equality.
+as well as for testing their equality.
 
 # Set
 
