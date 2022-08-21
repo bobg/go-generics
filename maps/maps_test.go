@@ -2,6 +2,7 @@ package maps
 
 import (
 	"reflect"
+	"sort"
 	"testing"
 
 	"github.com/bobg/go-generics/iter"
@@ -65,5 +66,14 @@ func TestEqual(t *testing.T) {
 	inp = Invert(inp)
 	if Equal(inp, testMap) {
 		t.Errorf("Equal says %v and %v are equal", inp, testMap)
+	}
+}
+
+func TestKeys(t *testing.T) {
+	m := map[string]int{"a": 1, "b": 2, "c": 3}
+	keys := Keys(m)
+	sort.Strings(keys)
+	if !reflect.DeepEqual(keys, []string{"a", "b", "c"}) {
+		t.Errorf("got %v, want [a b c]", keys)
 	}
 }

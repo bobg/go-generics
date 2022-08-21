@@ -62,3 +62,12 @@ func Equal[K, V comparable](a, b map[K]V) bool {
 	}
 	return true
 }
+
+// Keys returns a slice of the keys in m.
+func Keys[K comparable, V any](m map[K]V) []K {
+	result := make([]K, 0, len(m))
+	for k := range m {
+		result = append(result, k)
+	}
+	return result
+}
