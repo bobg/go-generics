@@ -77,3 +77,12 @@ func TestKeys(t *testing.T) {
 		t.Errorf("got %v, want [a b c]", keys)
 	}
 }
+
+func TestValues(t *testing.T) {
+	m := map[int]string{1: "a", 2: "b", 3: "c"}
+	vals := Values(m)
+	sort.Strings(vals)
+	if !reflect.DeepEqual(vals, []string{"a", "b", "c"}) {
+		t.Errorf("got %v, want [a b c]", vals)
+	}
+}
