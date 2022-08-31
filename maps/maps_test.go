@@ -8,7 +8,10 @@ import (
 	"github.com/bobg/go-generics/iter"
 )
 
-var testMap = map[int]int{1: 2, 3: 6, 7: 14}
+var (
+	testMap     = map[int]int{1: 2, 3: 6, 7: 14}
+	testMapDups = map[int]int{1: 2, 3: 2, 7: 14}
+)
 
 func TestDup(t *testing.T) {
 	got := Dup(testMap)
@@ -55,6 +58,20 @@ func TestInvert(t *testing.T) {
 	)
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got %v, want %v", got, want)
+	}
+}
+
+func TestInvertMulti(t *testing.T) {
+	var (
+		// Both are possible. The order of keys in the slices is undefined.
+		want1 = map[int][]int{2: {1, 3}, 14: {7}}
+		want2 = map[int][]int{2: {3, 1}, 14: {7}}
+
+		got = InvertMulti(testMapDups)
+	)
+
+	if !reflect.DeepEqual(got, want1) && !reflect.DeepEqual(got, want2) {
+		t.Errorf("got %v, want %v", got, want1)
 	}
 }
 

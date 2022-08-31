@@ -45,6 +45,17 @@ func Invert[K, V comparable](m map[K]V) map[V]K {
 	return result
 }
 
+// InvertMulti inverts the key-value pairs in the map.
+// It is like Invert but handles duplicate values:
+// the key slice contains all the keys that map to the same value.
+func InvertMulti[K, V comparable](m map[K]V) map[V][]K {
+	result := make(map[V][]K)
+	for k, v := range m {
+		result[v] = append(result[v], k)
+	}
+	return result
+}
+
 // Equal tests whether two maps are equal to each other.
 // The values in the maps must be "comparable."
 func Equal[K, V comparable](a, b map[K]V) bool {
