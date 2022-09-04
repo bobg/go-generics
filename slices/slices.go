@@ -315,19 +315,34 @@ func Dup[T any](s []T) []T {
 	return result
 }
 
+// KeyedSort sorts the given slice according to the ordering of the given keys,
+// whose items must map 1:1 with the slice.
+// It is an error if keys.Len() != len(slice).
+//
+// Both arguments end up sorted in place:
+// keys according to its Less method,
+// and slice by mirroring the reordering that happens in keys.
+func KeyedSort[T any](slice []T, keys sort.Interface) {
+	ks := keyedSorter[T]{
+		keys:  keys,
+		slice: slice,
+	}
+	sort.Sort(ks)
+}
+
 // KeyedSorter allows sorting a slice according to the order of a set of sort keys.
 // It works by sorting a [sort.Interface] containing sort keys
 // that must map 1:1 with the items of the slice you wish to sort.
 // (It is an error for Keys.Len() to differ from len(Slice).)
 // Any reordering applied to Keys is also applied to Slice.
-type KeyedSorter[T any] struct {
-	Keys  sort.Interface
-	Slice []T
+type keyedSorter[T any] struct {
+	keys  sort.Interface
+	slice []T
 }
 
-func (k KeyedSorter[T]) Len() int           { return len(k.Slice) }
-func (k KeyedSorter[T]) Less(i, j int) bool { return k.Keys.Less(i, j) }
-func (k KeyedSorter[T]) Swap(i, j int) {
-	k.Keys.Swap(i, j)
-	k.Slice[i], k.Slice[j] = k.Slice[j], k.Slice[i]
+func (k keyedSorter[T]) Len() int           { return len(k.slice) }
+func (k keyedSorter[T]) Less(i, j int) bool { return k.keys.Less(i, j) }
+func (k keyedSorter[T]) Swap(i, j int) {
+	k.keys.Swap(i, j)
+	k.slice[i], k.slice[j] = k.slice[j], k.slice[i]
 }
