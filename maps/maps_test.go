@@ -2,12 +2,16 @@ package maps
 
 import (
 	"reflect"
+	"sort"
 	"testing"
 
 	"github.com/bobg/go-generics/iter"
 )
 
-var testMap = map[int]int{1: 2, 3: 6, 7: 14}
+var (
+	testMap     = map[int]int{1: 2, 3: 6, 7: 14}
+	testMapDups = map[int]int{1: 2, 3: 2, 7: 14}
+)
 
 func TestDup(t *testing.T) {
 	got := Dup(testMap)
@@ -57,6 +61,20 @@ func TestInvert(t *testing.T) {
 	}
 }
 
+func TestInvertMulti(t *testing.T) {
+	var (
+		// Both are possible. The order of keys in the slices is undefined.
+		want1 = map[int][]int{2: {1, 3}, 14: {7}}
+		want2 = map[int][]int{2: {3, 1}, 14: {7}}
+
+		got = InvertMulti(testMapDups)
+	)
+
+	if !reflect.DeepEqual(got, want1) && !reflect.DeepEqual(got, want2) {
+		t.Errorf("got %v, want %v", got, want1)
+	}
+}
+
 func TestEqual(t *testing.T) {
 	inp := Dup(testMap)
 	if !Equal(inp, testMap) {
@@ -65,5 +83,23 @@ func TestEqual(t *testing.T) {
 	inp = Invert(inp)
 	if Equal(inp, testMap) {
 		t.Errorf("Equal says %v and %v are equal", inp, testMap)
+	}
+}
+
+func TestKeys(t *testing.T) {
+	m := map[string]int{"a": 1, "b": 2, "c": 3}
+	keys := Keys(m)
+	sort.Strings(keys)
+	if !reflect.DeepEqual(keys, []string{"a", "b", "c"}) {
+		t.Errorf("got %v, want [a b c]", keys)
+	}
+}
+
+func TestValues(t *testing.T) {
+	m := map[int]string{1: "a", 2: "b", 3: "c"}
+	vals := Values(m)
+	sort.Strings(vals)
+	if !reflect.DeepEqual(vals, []string{"a", "b", "c"}) {
+		t.Errorf("got %v, want [a b c]", vals)
 	}
 }
