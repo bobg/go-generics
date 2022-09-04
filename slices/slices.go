@@ -7,6 +7,8 @@
 // for processing slice elements with callbacks.
 package slices
 
+import "sort"
+
 // Get gets the idx'th element of s.
 //
 // If idx < 0 it counts from the end of s.
@@ -311,4 +313,21 @@ func Dup[T any](s []T) []T {
 	result := make([]T, len(s))
 	copy(result, s)
 	return result
+}
+
+// KeyedSorter allows sorting a slice according to the order of a set of sort keys.
+// It works by sorting a [sort.Interface] containing sort keys
+// that must map 1:1 with the items of the slice you wish to sort.
+// (It is an error for Keys.Len() to differ from len(Slice).)
+// Any reordering applied to Keys is also applied to Slice.
+type KeyedSorter[T any] struct {
+	Keys  sort.Interface
+	Slice []T
+}
+
+func (k KeyedSorter[T]) Len() int           { return len(k.Slice) }
+func (k KeyedSorter[T]) Less(i, j int) bool { return k.Keys.Less(i, j) }
+func (k KeyedSorter[T]) Swap(i, j int) {
+	k.Keys.Swap(i, j)
+	k.Slice[i], k.Slice[j] = k.Slice[j], k.Slice[i]
 }

@@ -4,9 +4,12 @@ package iter
 // If inp[i] is the ith element of the input
 // and out[i] is the ith element of the output,
 // then:
-//   out[0] == inp[0]
+//
+//	out[0] == inp[0]
+//
 // and
-//   out[i+1] == f(out[i], inp[i+1])
+//
+//	out[i+1] == f(out[i], inp[i+1])
 func Accum[T any](inp Of[T], f func(T, T) (T, error)) Of[T] {
 	return &accumIter[T]{
 		inp:   inp,

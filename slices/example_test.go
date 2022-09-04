@@ -2,6 +2,7 @@ package slices_test
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/bobg/go-generics/slices"
 )
@@ -117,4 +118,21 @@ func ExampleRotate() {
 	slices.Rotate(s, 2)
 	fmt.Println(s)
 	// Output: [1 2 3 4 5]
+}
+
+func ExampleKeyedSorter() {
+	var (
+		nums  = []int{1, 2, 3, 4, 5}
+		names = []string{"one", "two", "three", "four", "five"}
+	)
+	ks := slices.KeyedSorter[int]{
+		Keys:  sort.StringSlice(names),
+		Slice: nums,
+	}
+
+	// Sort the numerals in `nums` according to their names in `names`.
+	sort.Sort(ks)
+
+	fmt.Println(nums)
+	// Output: [5 4 1 3 2]
 }
