@@ -317,7 +317,7 @@ func Dup[T any](s []T) []T {
 
 // KeyedSort sorts the given slice according to the ordering of the given keys,
 // whose items must map 1:1 with the slice.
-// It is an error if keys.Len() != len(slice).
+// It is an unchecked error if keys.Len() != len(slice).
 //
 // Both arguments end up sorted in place:
 // keys according to its Less method,

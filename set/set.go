@@ -1,7 +1,10 @@
 // Package set contains generic typesafe set operations.
 package set
 
-import "github.com/bobg/go-generics/iter"
+import (
+	"github.com/bobg/go-generics/iter"
+	"github.com/bobg/go-generics/maps"
+)
 
 // Of is a set of elements of type T.
 // It is called "Of" so that when qualified with this package name
@@ -30,6 +33,7 @@ func (s Of[T]) Add(vals ...T) {
 }
 
 // Has tells whether the given value is in the set.
+// The set may be nil.
 func (s Of[T]) Has(val T) bool {
 	_, ok := s[val]
 	return ok
@@ -44,11 +48,13 @@ func (s Of[T]) Del(vals ...T) {
 }
 
 // Len tells the number of distinct values in the set.
+// The set may be nil.
 func (s Of[T]) Len() int {
 	return len(s)
 }
 
 // Equal tests whether the set has the same membership as another.
+// Either set may be nil.
 func (s Of[T]) Equal(other Of[T]) bool {
 	if len(s) != len(other) {
 		return false
@@ -64,6 +70,7 @@ func (s Of[T]) Equal(other Of[T]) bool {
 // Each calls a function on each element of the set in an indeterminate order.
 // It is safe to add and remove items during a call to Each,
 // but that can affect the sequence of values seen later during the same Each call.
+// The set may be nil.
 func (s Of[T]) Each(f func(T) error) error {
 	for val := range s {
 		err := f(val)
@@ -76,6 +83,7 @@ func (s Of[T]) Each(f func(T) error) error {
 
 // Iter produces an iterator over the members of the set,
 // in an indeterminate order.
+// The set may be nil.
 func (s Of[T]) Iter() iter.Of[T] {
 	return iter.FromMapKeys(s)
 }
@@ -86,35 +94,45 @@ func (s Of[T]) Slice() []T {
 	if s.Len() == 0 {
 		return nil
 	}
-	result := make([]T, 0, len(s))
-	for val := range s {
-		result = append(result, val)
-	}
-	return result
+	return maps.Keys(s)
 }
 
 // Intersect produces a new set containing only items that appear in all the given sets.
+// The input may include nils,
+// representing empty sets
+// and therefore producing an empty (but non-nil) intersection.
 func Intersect[T comparable](sets ...Of[T]) Of[T] {
-	s := New[T]()
+	result := New[T]()
 	if len(sets) == 0 {
-		return s
+		return result
+	}
+	for _, s := range sets {
+		if s == nil {
+			return result
+		}
 	}
 	sets[0].Each(func(val T) error {
-		for _, other := range sets[1:] {
-			if !other.Has(val) {
+		for _, s := range sets[1:] {
+			if !s.Has(val) {
 				return nil
 			}
 		}
-		s.Add(val)
+		result.Add(val)
 		return nil
 	})
-	return s
+	return result
 }
 
 // Union produces a new set containing all the items in all the given sets.
+// The input may include nils,
+// representing empty sets.
+// The result is never nil (but may be empty).
 func Union[T comparable](sets ...Of[T]) Of[T] {
 	result := New[T]()
 	for _, s := range sets {
+		if s == nil {
+			continue
+		}
 		s.Each(func(val T) error {
 			result.Add(val)
 			return nil
@@ -124,6 +142,8 @@ func Union[T comparable](sets ...Of[T]) Of[T] {
 }
 
 // Diff produces a new set containing the items in s1 that are not also in s2.
+// Either set may be nil.
+// The result is never nil (but may be empty).
 func Diff[T comparable](s1, s2 Of[T]) Of[T] {
 	s := New[T]()
 	s1.Each(func(val T) error {

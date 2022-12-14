@@ -1,3 +1,4 @@
+// Package parallel contains generic typesafe functions to manage concurrent logic of various kinds.
 package parallel
 
 import (
