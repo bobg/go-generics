@@ -39,7 +39,7 @@ The `iter` package implements efficient, typesafe iterators
 that can convert to and from Go slices, maps, and channels,
 and produce iterators over the values from function calls and goroutines.
 There is also an iterator over the results of a SQL query;
-plus the usual collection of functions on iterators
+the usual collection of functions on iterators
 (`Filter`, `Map`, `Concat`, `Accum`, etc.);
 and combinatorial operations
 (`Permutations`, `Combinations`, and `CombinationsWithReplacement`).
