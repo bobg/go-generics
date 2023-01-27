@@ -14,28 +14,29 @@ func TestRW(t *testing.T) {
 
 	reader, writer := RW(ctx, 4)
 
-	var wg sync.WaitGroup
-
 	var (
 		mu   sync.Mutex // protects vals
 		vals []int
+		ch   = make(chan struct{}) // signals that the first reader is under way
 	)
 
 	for i := 0; i < 3; i++ {
-		wg.Add(1)
+		i := i
 		go reader(func(x int) {
 			mu.Lock()
+			if i == 0 {
+				close(ch)
+			}
 			vals = append(vals, x)
 			mu.Unlock()
-			wg.Done()
 		})
 	}
-	wg.Wait()
 
-	writer(func(x int) int {
-		return x + 1
-	})
+	<-ch
 
+	writer(func(x int) int { return x + 1 })
+
+	var wg sync.WaitGroup
 	for i := 0; i < 3; i++ {
 		wg.Add(1)
 		go reader(func(x int) {
