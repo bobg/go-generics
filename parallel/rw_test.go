@@ -21,7 +21,7 @@ func TestRW(t *testing.T) {
 	)
 
 	for i := 0; i < 3; i++ {
-		i := i
+		i := i // Go loop var pitfall
 		go reader(func(x int) {
 			mu.Lock()
 			if i == 0 {
