@@ -45,7 +45,7 @@ import (
 //   val := reader()
 //   *val++
 //
-// then the pointed-to value _will_ be seen by caller B.
+// then the change in the pointed-to value _will_ be seen by caller B.
 //
 // For more on the fuzzy concept of "reference types" in Go,
 // see https://github.com/go101/go101/wiki/About-the-terminology-%22reference-type%22-in-Go
