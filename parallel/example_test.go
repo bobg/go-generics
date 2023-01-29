@@ -109,3 +109,43 @@ func ExamplePool() {
 	// -9
 	// -10
 }
+
+func ExampleProtect() {
+	// A caller is supplied with a reader and a writer
+	// for purposes of accessing and updating the protected value safely
+	// (in this case an int, initially 4).
+	reader, writer, closer := parallel.Protect(4)
+	defer closer()
+
+	// Call the reader in three concurrent goroutines, each printing the protected value.
+	var wg sync.WaitGroup
+	for i := 0; i < 3; i++ {
+		wg.Add(1)
+		go func() {
+			fmt.Println(reader())
+			wg.Done()
+		}()
+	}
+	wg.Wait()
+
+	// Increment the protected value.
+	writer(reader() + 1)
+
+	// Call the reader in three concurrent goroutines, each printing the protected value.
+	for i := 0; i < 3; i++ {
+		wg.Add(1)
+		go func() {
+			fmt.Println(reader())
+			wg.Done()
+		}()
+	}
+	wg.Wait()
+
+	// Output:
+	// 4
+	// 4
+	// 4
+	// 5
+	// 5
+	// 5
+}
