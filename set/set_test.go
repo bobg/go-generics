@@ -35,10 +35,16 @@ func TestSet(t *testing.T) {
 	if !reflect.DeepEqual(i, Of[int](map[int]struct{}{5: {}, 6: {}})) {
 		t.Errorf("got %v, want [5 6]", i)
 	}
-	u := Union(s, s2)
+	i = Intersect(s2, nil)
+	if i.Len() != 0 {
+		t.Errorf("got %v, want []", i)
+	}
+
+	u := Union(s, s2, nil)
 	if !reflect.DeepEqual(u, Of[int](map[int]struct{}{1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}, 7: {}, 8: {}})) {
 		t.Errorf("got %v, want [1 2 3 4 5 6 7 8]", u)
 	}
+
 	d := Diff(s, s2)
 	if !reflect.DeepEqual(d, Of[int](map[int]struct{}{1: {}, 2: {}, 3: {}, 4: {}})) {
 		t.Errorf("got %v, want [1 2 3 4]", d)

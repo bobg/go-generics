@@ -1,3 +1,4 @@
+// Package maps contains utility functions for working with Go maps.
 package maps
 
 import "github.com/bobg/go-generics/iter"
