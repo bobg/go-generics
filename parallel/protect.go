@@ -5,7 +5,7 @@ import (
 )
 
 // Protect offers safe concurrent access to a protected value.
-// It is a "share memory hby communicating" alternative
+// It is a "share memory by communicating" alternative
 // to protecting the value with [sync.RWMutex].
 //
 // The caller gets back three functions:
@@ -26,7 +26,8 @@ import (
 //
 // The closer should be called to release resources
 // when no more reader or writer calls are needed.
-// Calling the reader after the closer may cause a panic.
+// Calling any of the functions (reader, writer, or closer)
+// after a call to the closer may cause a panic.
 //
 // The term "reference type" here means a type
 // (such as pointer, slice, map, channel, function, and interface)
