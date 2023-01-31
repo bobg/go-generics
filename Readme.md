@@ -52,3 +52,4 @@ The `parallel` package contains functions for coordinating parallel workers:
 - `Producers` manages a set of N workers producing a stream of values consumed by the caller.
 - `Values` concurrently produces a set of N values.
 - `Pool` manages access to a pool of concurrent workers.
+- `Protect` manages concurrent access to a protected data value.
