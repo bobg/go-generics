@@ -13,13 +13,6 @@ var (
 	testMapDups = map[int]int{1: 2, 3: 2, 7: 14}
 )
 
-func TestDup(t *testing.T) {
-	got := Dup(testMap)
-	if !reflect.DeepEqual(got, testMap) {
-		t.Errorf("got %v, want %v", got, testMap)
-	}
-}
-
 func TestEach(t *testing.T) {
 	var sum int
 	err := Each(testMap, func(k, v int) error {
@@ -76,7 +69,7 @@ func TestInvertMulti(t *testing.T) {
 }
 
 func TestEqual(t *testing.T) {
-	inp := Dup(testMap)
+	inp := Clone(testMap)
 	if !Equal(inp, testMap) {
 		t.Errorf("Equal says %v and %v are not equal", inp, testMap)
 	}
