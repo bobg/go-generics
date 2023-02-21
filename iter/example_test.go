@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/bobg/go-generics/iter"
+	"github.com/bobg/go-generics/v2/iter"
 )
 
 func ExampleAccum() {

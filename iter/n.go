@@ -1,6 +1,6 @@
 package iter
 
-import "github.com/bobg/go-generics/slices"
+import "github.com/bobg/go-generics/v2/internal"
 
 // FirstN produces an iterator containing the first n elements of the input
 // (or all of the input, if there are fewer than n elements).
@@ -41,7 +41,7 @@ func LastN[T any](inp Of[T], n int) ([]T, error) {
 	if err := inp.Err(); err != nil {
 		return nil, err
 	}
-	slices.Rotate(buf, -start)
+	internal.RotateSlice(buf, -start)
 	return buf, nil
 }
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/bobg/go-generics/slices"
+	"github.com/bobg/go-generics/v2/slices"
 )
 
 func ExampleGet() {

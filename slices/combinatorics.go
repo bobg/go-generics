@@ -1,9 +1,9 @@
-package iter
+package slices
 
 import (
 	"context"
 
-	"github.com/bobg/go-generics/slices"
+	"github.com/bobg/go-generics/v2/iter"
 )
 
 // Permutations produces an iterator over all permutations of s.
@@ -13,21 +13,21 @@ import (
 // If s is [1 2 3], this function will produce:
 //
 //	[1 2 3] [2 1 3] [3 1 2] [1 3 2] [2 3 1] [3 2 1]
-func Permutations[T any](ctx context.Context, s []T) Of[[]T] {
+func Permutations[S ~[]T, T any](ctx context.Context, s S) iter.Of[S] {
 	if len(s) == 0 {
-		return FromSlice[[]T](nil)
+		return iter.FromSlice[[]S, S](nil)
 	}
-	return Go(ctx, func(ch chan<- []T) error {
-		return permutations(ctx, slices.Dup(s), len(s), ch)
+	return iter.Go(ctx, func(ch chan<- S) error {
+		return permutations(ctx, Clone(s), len(s), ch)
 	})
 }
 
-func permutations[T any](ctx context.Context, s []T, n int, ch chan<- []T) error {
+func permutations[S ~[]T, T any](ctx context.Context, s S, n int, ch chan<- S) error {
 	if n == 1 {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
-		case ch <- slices.Dup(s):
+		case ch <- Clone(s):
 		}
 		return nil
 	}
@@ -55,22 +55,22 @@ func permutations[T any](ctx context.Context, s []T, n int, ch chan<- []T) error
 // If s is [1 2 3] and n is 2, this function will produce:
 //
 //	[1 2] [1 3] [2 3]
-func Combinations[T any](ctx context.Context, s []T, n int) Of[[]T] {
+func Combinations[S ~[]T, T any](ctx context.Context, s S, n int) iter.Of[S] {
 	if n == 0 {
-		return FromSlice[[]T](nil)
+		return iter.FromSlice[[]S, S](nil)
 	}
 	if n > len(s) {
-		return FromSlice[[]T](nil)
+		return iter.FromSlice[[]S, S](nil)
 	}
 	if n == len(s) {
-		return FromSlice([][]T{s})
+		return iter.FromSlice([]S{s})
 	}
-	return Go(ctx, func(ch chan<- []T) error {
+	return iter.Go(ctx, func(ch chan<- S) error {
 		counters := make([]int, n)
 		for i := 0; i < n; i++ {
 			counters[i] = i
 		}
-		buf := make([]T, n)
+		buf := make(S, n)
 
 	OUTER:
 		for {
@@ -80,7 +80,7 @@ func Combinations[T any](ctx context.Context, s []T, n int) Of[[]T] {
 			select {
 			case <-ctx.Done():
 				return ctx.Err()
-			case ch <- slices.Dup(buf):
+			case ch <- Clone(buf):
 			}
 
 			for i := n - 1; i >= 0; i-- {
@@ -104,16 +104,16 @@ func Combinations[T any](ctx context.Context, s []T, n int) Of[[]T] {
 // If s is [1 2 3] and n is 2, this function will produce:
 //
 //	[1 1] [1 2] [1 3] [2 2] [2 3] [3 3]
-func CombinationsWithReplacement[T any](ctx context.Context, s []T, n int) Of[[]T] {
+func CombinationsWithReplacement[S ~[]T, T any](ctx context.Context, s S, n int) iter.Of[S] {
 	if n == 0 {
-		return FromSlice[[]T](nil)
+		return iter.FromSlice[[]S, S](nil)
 	}
 	if n > len(s) {
-		return FromSlice[[]T](nil)
+		return iter.FromSlice[[]S, S](nil)
 	}
-	return Go(ctx, func(ch chan<- []T) error {
+	return iter.Go(ctx, func(ch chan<- S) error {
 		counters := make([]int, n)
-		buf := make([]T, n)
+		buf := make(S, n)
 
 	OUTER:
 		for {
@@ -123,7 +123,7 @@ func CombinationsWithReplacement[T any](ctx context.Context, s []T, n int) Of[[]
 			select {
 			case <-ctx.Done():
 				return ctx.Err()
-			case ch <- slices.Dup(buf):
+			case ch <- Clone(buf):
 			}
 
 			for i := n - 1; i >= 0; i-- {

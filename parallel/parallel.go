@@ -8,7 +8,7 @@ import (
 
 	"golang.org/x/sync/errgroup"
 
-	"github.com/bobg/go-generics/iter"
+	"github.com/bobg/go-generics/v2/iter"
 )
 
 // Error is an error type for wrapping errors returned from worker goroutines.

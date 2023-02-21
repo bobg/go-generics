@@ -6,7 +6,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/bobg/go-generics/set"
+	"github.com/bobg/go-generics/v2/set"
 )
 
 func TestValues(t *testing.T) {

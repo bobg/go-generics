@@ -1,10 +1,12 @@
-package iter
+package slices
 
 import (
 	"context"
 	"fmt"
 	"reflect"
 	"testing"
+
+	"github.com/bobg/go-generics/v2/iter"
 )
 
 func TestPermutations(t *testing.T) {
@@ -30,7 +32,7 @@ func TestPermutations(t *testing.T) {
 	for i, tc := range cases {
 		t.Run(fmt.Sprintf("case_%02d", i+1), func(t *testing.T) {
 			it := Permutations(ctx, tc.inp)
-			got, err := ToSlice(it)
+			got, err := iter.ToSlice(it)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -81,7 +83,7 @@ func TestCombinations(t *testing.T) {
 	for i, tc := range cases {
 		t.Run(fmt.Sprintf("case_%02d", i+1), func(t *testing.T) {
 			it := Combinations(ctx, tc.inp, tc.n)
-			got, err := ToSlice(it)
+			got, err := iter.ToSlice(it)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -132,7 +134,7 @@ func TestCombinationsWithReplacement(t *testing.T) {
 	for i, tc := range cases {
 		t.Run(fmt.Sprintf("case_%02d", i+1), func(t *testing.T) {
 			it := CombinationsWithReplacement(ctx, tc.inp, tc.n)
-			got, err := ToSlice(it)
+			got, err := iter.ToSlice(it)
 			if err != nil {
 				t.Fatal(err)
 			}

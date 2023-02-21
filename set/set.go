@@ -2,8 +2,8 @@
 package set
 
 import (
-	"github.com/bobg/go-generics/iter"
-	"github.com/bobg/go-generics/maps"
+	"github.com/bobg/go-generics/v2/iter"
+	"github.com/bobg/go-generics/v2/maps"
 )
 
 // Of is a set of elements of type T.

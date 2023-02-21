@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/bobg/go-generics/parallel"
+	"github.com/bobg/go-generics/v2/parallel"
 )
 
 func ExampleConsumers() {
