@@ -1,5 +1,6 @@
 package maps
 
+// TODO: import maps from stdlib after Go 1.21.
 import "golang.org/x/exp/maps"
 
 // Keys returns the keys of the map m.
