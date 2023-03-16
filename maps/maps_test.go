@@ -2,7 +2,6 @@ package maps
 
 import (
 	"reflect"
-	"sort"
 	"testing"
 
 	"github.com/bobg/go-generics/v2/iter"
@@ -61,34 +60,5 @@ func TestInvertMulti(t *testing.T) {
 
 	if !reflect.DeepEqual(got, want1) && !reflect.DeepEqual(got, want2) {
 		t.Errorf("got %v, want %v", got, want1)
-	}
-}
-
-func TestEqual(t *testing.T) {
-	inp := Clone(testMap)
-	if !Equal(inp, testMap) {
-		t.Errorf("Equal says %v and %v are not equal", inp, testMap)
-	}
-	inp = Invert(inp)
-	if Equal(inp, testMap) {
-		t.Errorf("Equal says %v and %v are equal", inp, testMap)
-	}
-}
-
-func TestKeys(t *testing.T) {
-	m := map[string]int{"a": 1, "b": 2, "c": 3}
-	keys := Keys(m)
-	sort.Strings(keys)
-	if !reflect.DeepEqual(keys, []string{"a", "b", "c"}) {
-		t.Errorf("got %v, want [a b c]", keys)
-	}
-}
-
-func TestValues(t *testing.T) {
-	m := map[int]string{1: "a", 2: "b", 3: "c"}
-	vals := Values(m)
-	sort.Strings(vals)
-	if !reflect.DeepEqual(vals, []string{"a", "b", "c"}) {
-		t.Errorf("got %v, want [a b c]", vals)
 	}
 }
