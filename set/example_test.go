@@ -7,9 +7,11 @@ import (
 )
 
 func ExampleDiff() {
-	s1 := set.New(1, 2, 3, 4, 5)
-	s2 := set.New(4, 5, 6, 7, 8)
-	diff := set.Diff(s1, s2)
+	var (
+		s1   = set.New(1, 2, 3, 4, 5)
+		s2   = set.New(4, 5, 6, 7, 8)
+		diff = set.Diff(s1, s2)
+	)
 	diff.Each(func(val int) { fmt.Println(val) })
 	// Unordered output:
 	// 1
@@ -18,9 +20,11 @@ func ExampleDiff() {
 }
 
 func ExampleIntersect() {
-	s1 := set.New(1, 2, 3, 4, 5)
-	s2 := set.New(4, 5, 6, 7, 8)
-	inter := set.Intersect(s1, s2)
+	var (
+		s1    = set.New(1, 2, 3, 4, 5)
+		s2    = set.New(4, 5, 6, 7, 8)
+		inter = set.Intersect(s1, s2)
+	)
 	inter.Each(func(val int) { fmt.Println(val) })
 	// Unordered output:
 	// 4
@@ -28,9 +32,11 @@ func ExampleIntersect() {
 }
 
 func ExampleUnion() {
-	s1 := set.New(1, 2, 3, 4, 5)
-	s2 := set.New(4, 5, 6, 7, 8)
-	union := set.Union(s1, s2)
+	var (
+		s1    = set.New(1, 2, 3, 4, 5)
+		s2    = set.New(4, 5, 6, 7, 8)
+		union = set.Union(s1, s2)
+	)
 	union.Each(func(val int) { fmt.Println(val) })
 	// Unordered output:
 	// 1
