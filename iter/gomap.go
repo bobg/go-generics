@@ -25,13 +25,9 @@ func (*goMapIter[K, V]) Err() error {
 
 // FromMap produces an iterator of key-value pairs from a Go map.
 func FromMap[K comparable, V any](m map[K]V) Of[Pair[K, V]] {
-	keys := make([]K, 0, len(m))
-	for k := range m {
-		keys = append(keys, k)
-	}
 	return &goMapIter[K, V]{
 		m:        m,
-		keysIter: FromSlice(keys),
+		keysIter: FromMapKeys(m),
 	}
 }
 
