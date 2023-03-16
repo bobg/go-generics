@@ -1,7 +1,6 @@
 package iter_test
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/bobg/go-generics/v2/iter"
@@ -71,7 +70,7 @@ func ExampleDup() {
 }
 
 func ExampleGo() {
-	it := iter.Go(context.Background(), func(ch chan<- int) error {
+	it := iter.Go(func(ch chan<- int) error {
 		ch <- 1
 		ch <- 2
 		ch <- 3

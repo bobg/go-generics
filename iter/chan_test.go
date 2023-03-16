@@ -59,7 +59,7 @@ func TestChanContext(t *testing.T) {
 		}
 	}()
 
-	it := FromChan(ch, WithContext[int](ctx))
+	it := FromChan(ch, WithContext(ctx))
 	if !it.Next() {
 		t.Fatal("no first value in iterator")
 	}
