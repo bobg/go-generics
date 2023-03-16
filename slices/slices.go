@@ -171,11 +171,19 @@ func SliceTo[S ~[]T, T any](s S, from, to int) S {
 	return s[from:to]
 }
 
-// Each runs a function on each item of a slice,
+// Each runs a simple function on each item of a slice.
+func Each[S ~[]T, T any](s S, f func(T)) {
+	Eachx(s, func(_ int, val T) error {
+		f(val)
+		return nil
+	})
+}
+
+// Eachx runs a function on each item of a slice,
 // passing the index and the item to the function.
 // If any call to the function returns an error,
-// Each stops looping and exits with the error.
-func Each[S ~[]T, T any](s S, f func(int, T) error) error {
+// Eachx stops looping and exits with the error.
+func Eachx[S ~[]T, T any](s S, f func(int, T) error) error {
 	for i, val := range s {
 		if err := f(i, val); err != nil {
 			return err
@@ -184,11 +192,20 @@ func Each[S ~[]T, T any](s S, f func(int, T) error) error {
 	return nil
 }
 
-// Map runs a function on each item of a slice,
+// Map runs a simple function on each item of a slice,
+// accumulating results in a new slice.
+func Map[S ~[]T, T, U any](s S, f func(T) U) []U {
+	result, _ := Mapx(s, func(_ int, val T) (U, error) {
+		return f(val), nil
+	})
+	return result
+}
+
+// Mapx runs a function on each item of a slice,
 // accumulating results in a new slice.
 // If any call to the function returns an error,
-// Map stops looping and exits with the error.
-func Map[S ~[]T, T, U any](s S, f func(int, T) (U, error)) ([]U, error) {
+// Mapx stops looping and exits with the error.
+func Mapx[S ~[]T, T, U any](s S, f func(int, T) (U, error)) ([]U, error) {
 	result := make([]U, 0, len(s))
 	for i, val := range s {
 		u, err := f(i, val)
@@ -200,14 +217,28 @@ func Map[S ~[]T, T, U any](s S, f func(int, T) (U, error)) ([]U, error) {
 	return result, nil
 }
 
-// Accum accumulates the result of repeatedly applying a function to the elements of a slice.
+// Accum accumulates the result of repeatedly applying a simple function to the elements of a slice.
 //
 // If the slice has length 0, the result is the zero value of type T.
 // If the slice has length 1, the result is s[0].
 // Otherwise, the result is R[len(s)-1],
 // where R[0] is s[0]
 // and R[n+1] = f(R[n], s[n+1]).
-func Accum[S ~[]T, T any](s S, f func(T, T) (T, error)) (T, error) {
+func Accum[S ~[]T, T any](s S, f func(T, T) T) T {
+	result, _ := Accumx(s, func(a, b T) (T, error) {
+		return f(a, b), nil
+	})
+	return result
+}
+
+// Accumx accumulates the result of repeatedly applying a function to the elements of a slice.
+//
+// If the slice has length 0, the result is the zero value of type T.
+// If the slice has length 1, the result is s[0].
+// Otherwise, the result is R[len(s)-1],
+// where R[0] is s[0]
+// and R[n+1] = f(R[n], s[n+1]).
+func Accumx[S ~[]T, T any](s S, f func(T, T) (T, error)) (T, error) {
 	if len(s) == 0 {
 		var zero T
 		return zero, nil
@@ -223,9 +254,18 @@ func Accum[S ~[]T, T any](s S, f func(T, T) (T, error)) (T, error) {
 	return result, nil
 }
 
-// Filter calls a predicate for each element of a slice,
+// Filterx calls a simple predicate for each element of a slice,
 // returning a slice of those elements for which the predicate returned true.
-func Filter[S ~[]T, T any](s S, f func(T) (bool, error)) (S, error) {
+func Filter[S ~[]T, T any](s S, f func(T) bool) S {
+	result, _ := Filterx(s, func(val T) (bool, error) {
+		return f(val), nil
+	})
+	return result
+}
+
+// Filterx calls a predicate for each element of a slice,
+// returning a slice of those elements for which the predicate returned true.
+func Filterx[S ~[]T, T any](s S, f func(T) (bool, error)) (S, error) {
 	var result S
 	for _, val := range s {
 		ok, err := f(val)
@@ -241,10 +281,21 @@ func Filter[S ~[]T, T any](s S, f func(T) (bool, error)) (S, error) {
 }
 
 // Group partitions the elements of a slice into groups.
+// It does this by calling a simple grouping function on each element,
+// which produces a grouping key.
+// The result is a map of group keys to slices of elements having that key.
+func Group[S ~[]T, T any, K comparable](s S, f func(T) K) map[K]S {
+	result, _ := Groupx(s, func(val T) (K, error) {
+		return f(val), nil
+	})
+	return result
+}
+
+// Groupx partitions the elements of a slice into groups.
 // It does this by calling a grouping function on each element,
 // which produces a grouping key.
 // The result is a map of group keys to slices of elements having that key.
-func Group[S ~[]T, T any, K comparable](s S, f func(T) (K, error)) (map[K]S, error) {
+func Groupx[S ~[]T, T any, K comparable](s S, f func(T) (K, error)) (map[K]S, error) {
 	result := make(map[K]S)
 	for _, val := range s {
 		key, err := f(val)

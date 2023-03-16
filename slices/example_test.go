@@ -49,9 +49,9 @@ func ExampleRemoveTo() {
 	// Output: [1 2 3]
 }
 
-func ExampleEach() {
+func ExampleEachx() {
 	s := []int{100, 200, 300}
-	slices.Each(s, func(idx, val int) error {
+	slices.Eachx(s, func(idx, val int) error {
 		fmt.Println(idx, val)
 		return nil
 	})
@@ -63,47 +63,33 @@ func ExampleEach() {
 
 func ExampleMap() {
 	s1 := []int{1, 2, 3, 4, 5}
-	s2, err := slices.Map(s1, func(idx, val int) (string, error) {
-		return string([]byte{byte('a' + val - 1)}), nil
-	})
-	if err != nil {
-		panic(err)
-	}
+	s2 := slices.Map(s1, func(val int) string { return string([]byte{byte('a' + val - 1)}) })
 	fmt.Println(s2)
 	// Output: [a b c d e]
 }
 
 func ExampleAccum() {
 	s := []int{1, 2, 3, 4, 5}
-	sum, err := slices.Accum(s, func(a, b int) (int, error) { return a + b, nil })
-	if err != nil {
-		panic(err)
-	}
+	sum := slices.Accum(s, func(a, b int) int { return a + b })
 	fmt.Println(sum)
 	// Output: 15
 }
 
 func ExampleFilter() {
 	s := []int{1, 2, 3, 4, 5, 6, 7}
-	evens, err := slices.Filter(s, func(val int) (bool, error) { return val%2 == 0, nil })
-	if err != nil {
-		panic(err)
-	}
+	evens := slices.Filter(s, func(val int) bool { return val%2 == 0 })
 	fmt.Println(evens)
 	// Output: [2 4 6]
 }
 
 func ExampleGroup() {
 	s := []int{1, 2, 3, 4, 5, 6, 7}
-	groups, err := slices.Group(s, func(val int) (string, error) {
+	groups := slices.Group(s, func(val int) string {
 		if val%2 == 0 {
-			return "even", nil
+			return "even"
 		}
-		return "odd", nil
+		return "odd"
 	})
-	if err != nil {
-		panic(err)
-	}
 
 	for key, slice := range groups {
 		fmt.Println(key, slice)

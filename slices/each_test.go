@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestEach(t *testing.T) {
+func TestEachx(t *testing.T) {
 	inp := []int{2, 3, 5}
 
 	type wanttype struct {
@@ -21,7 +21,7 @@ func TestEach(t *testing.T) {
 	}}
 
 	var got []wanttype
-	err := Each(inp, func(idx, val int) error {
+	err := Eachx(inp, func(idx, val int) error {
 		got = append(got, wanttype{idx: idx, val: val})
 		return nil
 	})
@@ -34,7 +34,7 @@ func TestEach(t *testing.T) {
 
 	e := errors.New("error")
 
-	err = Each(inp, func(_, _ int) error {
+	err = Eachx(inp, func(_, _ int) error {
 		return e
 	})
 	if !errors.Is(err, e) {

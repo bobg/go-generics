@@ -10,13 +10,7 @@ func ExampleDiff() {
 	s1 := set.New(1, 2, 3, 4, 5)
 	s2 := set.New(4, 5, 6, 7, 8)
 	diff := set.Diff(s1, s2)
-	err := diff.Each(func(val int) error {
-		fmt.Println(val)
-		return nil
-	})
-	if err != nil {
-		panic(err)
-	}
+	diff.Each(func(val int) { fmt.Println(val) })
 	// Unordered output:
 	// 1
 	// 2
@@ -27,13 +21,7 @@ func ExampleIntersect() {
 	s1 := set.New(1, 2, 3, 4, 5)
 	s2 := set.New(4, 5, 6, 7, 8)
 	inter := set.Intersect(s1, s2)
-	err := inter.Each(func(val int) error {
-		fmt.Println(val)
-		return nil
-	})
-	if err != nil {
-		panic(err)
-	}
+	inter.Each(func(val int) { fmt.Println(val) })
 	// Unordered output:
 	// 4
 	// 5
@@ -43,13 +31,7 @@ func ExampleUnion() {
 	s1 := set.New(1, 2, 3, 4, 5)
 	s2 := set.New(4, 5, 6, 7, 8)
 	union := set.Union(s1, s2)
-	err := union.Each(func(val int) error {
-		fmt.Println(val)
-		return nil
-	})
-	if err != nil {
-		panic(err)
-	}
+	union.Each(func(val int) { fmt.Println(val) })
 	// Unordered output:
 	// 1
 	// 2

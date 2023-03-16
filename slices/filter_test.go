@@ -8,17 +8,14 @@ import (
 func TestFilter(t *testing.T) {
 	inp := []int{2, 3, 4, 5, 6, 7, 8, 9, 10}
 	want := []int{2, 3, 5, 7}
-	got, err := Filter(inp, func(n int) (bool, error) {
+	got := Filter(inp, func(n int) bool {
 		for i := 2; i < n; i++ {
 			if n%i == 0 {
-				return false, nil
+				return false
 			}
 		}
-		return true, nil
+		return true
 	})
-	if err != nil {
-		t.Fatal(err)
-	}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got %v, want %v", got, want)
 	}

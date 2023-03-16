@@ -19,13 +19,7 @@ func TestSet(t *testing.T) {
 	}
 
 	got := make(map[int]struct{})
-	err := s.Each(func(val int) error {
-		got[val] = struct{}{}
-		return nil
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
+	s.Each(func(val int) { got[val] = struct{}{} })
 	if !reflect.DeepEqual(got, map[int]struct{}{1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}}) {
 		t.Errorf("got %v, want [1 2 3 4 5 6]", got)
 	}
@@ -57,7 +51,7 @@ func TestSet(t *testing.T) {
 	for it.Next() {
 		m[it.Val()] = struct{}{}
 	}
-	if err = it.Err(); err != nil {
+	if err := it.Err(); err != nil {
 		t.Fatal(err)
 	}
 	if !reflect.DeepEqual(m, map[int]struct{}{1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}}) {

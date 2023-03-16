@@ -10,7 +10,7 @@ import (
 func ExampleAccum() {
 	ints := iter.Ints(1, 1)        // All integers starting at 1
 	first5 := iter.FirstN(ints, 5) // First 5 integers
-	sums := iter.Accum(first5, func(a, b int) (int, error) { return a + b, nil })
+	sums := iter.Accum(first5, func(a, b int) int { return a + b })
 	for sums.Next() {
 		fmt.Println(sums.Val())
 	}

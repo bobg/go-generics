@@ -6,6 +6,9 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+// This file contains entrypoints for each of the functions in in golang.org/x/exp/slices
+// (except those, like Insert, extended by other functions in this package).
+
 // Equal reports whether two slices are equal: the same length and all
 // elements equal. If the lengths are different, Equal returns false.
 // Otherwise, the elements are compared in increasing index order, and the

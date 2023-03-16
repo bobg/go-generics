@@ -7,7 +7,7 @@ import (
 
 func TestAccum(t *testing.T) {
 	inp := FromSlice([]int{1, 2, 3, 4})
-	a := Accum(inp, func(a, b int) (int, error) { return a + b, nil })
+	a := Accum(inp, func(a, b int) int { return a + b })
 	got, err := ToSlice(a)
 	if err != nil {
 		t.Fatal(err)

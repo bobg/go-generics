@@ -15,13 +15,9 @@ var (
 
 func TestEach(t *testing.T) {
 	var sum int
-	err := Each(testMap, func(k, v int) error {
+	Each(testMap, func(k, v int) {
 		sum += k * v
-		return nil
 	})
-	if err != nil {
-		t.Fatal(err)
-	}
 	if sum != 118 {
 		t.Errorf("got %d, want 118", sum)
 	}
