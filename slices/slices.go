@@ -254,7 +254,7 @@ func Accumx[S ~[]T, T any](s S, f func(T, T) (T, error)) (T, error) {
 	return result, nil
 }
 
-// Filterx calls a simple predicate for each element of a slice,
+// Filter calls a simple predicate for each element of a slice,
 // returning a slice of those elements for which the predicate returned true.
 func Filter[S ~[]T, T any](s S, f func(T) bool) S {
 	result, _ := Filterx(s, func(val T) (bool, error) {
