@@ -81,14 +81,22 @@ func ContainsFunc[E any](s []E, f func(E) bool) bool {
 // Delete might not modify the elements s[len(s)-(j-i):len(s)]. If those
 // elements contain pointers you might consider zeroing those elements so that
 // objects they reference can be garbage collected.
+//
+// If i < 0 it counts from the end of s.
+// If j <= 0 it counts from the end of s.
+// (This is a change from the behavior of "golang.org/x/exp/slices".Delete.)
 func Delete[S ~[]E, E any](s S, i, j int) S {
-	return slices.Delete(s, i, j)
+	return RemoveTo(s, i, j)
 }
 
 // Replace replaces the elements s[i:j] by the given v, and returns the
 // modified slice. Replace panics if s[i:j] is not a valid slice of s.
+//
+// If i < 0 it counts from the end of s.
+// If j <= 0 it counts from the end of s.
+// (This is a change from the behavior of "golang.org/x/exp/slices".Replace.)
 func Replace[S ~[]E, E any](s S, i, j int, v ...E) S {
-	return slices.Replace(s, i, j, v...)
+	return ReplaceTo(s, i, j, v...)
 }
 
 // Clone returns a copy of the slice.

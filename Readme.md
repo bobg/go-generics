@@ -23,7 +23,10 @@ It also includes combinatorial operations:
 `Permutations`, `Combinations`, and `CombinationsWithReplacement`.
 
 The `slices` package is a drop-in replacement for `golang.org/x/exp/slices`
-(which will become part of the stdlib [in Go 1.21](https://github.com/golang/go/issues/57433)).
+(which will become part of the stdlib [in Go 1.21](https://github.com/golang/go/issues/57433))
+with one difference:
+the index values passed to `Insert`, `Delete`, and `Replace`
+may be negative for counting backward from the end of the slice.
 
 # Maps
 

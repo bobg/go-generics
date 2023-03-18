@@ -47,6 +47,7 @@ func Append[S ~[]T, T any](s S, vals ...T) S {
 // After the insert, the first new value has position idx.
 //
 // If idx < 0, it counts from the end of s.
+// (This is a change from the behavior of "golang.org/x/exp/slices".Insert.)
 //
 // The input slice is modified.
 //
