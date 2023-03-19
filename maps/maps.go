@@ -11,7 +11,8 @@ func Each[M ~map[K]V, K comparable, V any](m M, f func(K, V)) {
 	})
 }
 
-// Eachx calls a function on each key-value pair in the given map.
+// Eachx is the extended form of [Each].
+// It calls a function on each key-value pair in the given map.
 // If the function returns an error, Each exits early with that error.
 func Eachx[M ~map[K]V, K comparable, V any](m M, f func(K, V) error) error {
 	for k, v := range m {

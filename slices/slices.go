@@ -180,7 +180,8 @@ func Each[S ~[]T, T any](s S, f func(T)) {
 	})
 }
 
-// Eachx runs a function on each item of a slice,
+// Eachx is the extended form of [Each].
+// It runs a function on each item of a slice,
 // passing the index and the item to the function.
 // If any call to the function returns an error,
 // Eachx stops looping and exits with the error.
@@ -202,7 +203,8 @@ func Map[S ~[]T, T, U any](s S, f func(T) U) []U {
 	return result
 }
 
-// Mapx runs a function on each item of a slice,
+// Mapx is the extended form of [Map].
+// It runs a function on each item of a slice,
 // accumulating results in a new slice.
 // If any call to the function returns an error,
 // Mapx stops looping and exits with the error.
@@ -232,7 +234,8 @@ func Accum[S ~[]T, T any](s S, f func(T, T) T) T {
 	return result
 }
 
-// Accumx accumulates the result of repeatedly applying a function to the elements of a slice.
+// Accumx is the extended form of [Accum].
+// It accumulates the result of repeatedly applying a function to the elements of a slice.
 //
 // If the slice has length 0, the result is the zero value of type T.
 // If the slice has length 1, the result is s[0].
@@ -264,7 +267,8 @@ func Filter[S ~[]T, T any](s S, f func(T) bool) S {
 	return result
 }
 
-// Filterx calls a predicate for each element of a slice,
+// Filterx is the extended form of [Filter].
+// It calls a predicate for each element of a slice,
 // returning a slice of those elements for which the predicate returned true.
 func Filterx[S ~[]T, T any](s S, f func(T) (bool, error)) (S, error) {
 	var result S
@@ -292,7 +296,8 @@ func Group[S ~[]T, T any, K comparable](s S, f func(T) K) map[K]S {
 	return result
 }
 
-// Groupx partitions the elements of a slice into groups.
+// Groupx is the extended form of [Group].
+// It partitions the elements of a slice into groups.
 // It does this by calling a grouping function on each element,
 // which produces a grouping key.
 // The result is a map of group keys to slices of elements having that key.

@@ -7,7 +7,8 @@ func Map[T, U any](inp Of[T], f func(T) U) Of[U] {
 	})
 }
 
-// Mapx produces an iterator of values transformed from an input iterator by a mapping function.
+// Mapx is the extended form of [Map].
+// It produces an iterator of values transformed from an input iterator by a mapping function.
 // If the mapping function returns an error,
 // iteration stops and the error is available via the output iterator's Err method.
 func Mapx[T, U any](inp Of[T], f func(T) (U, error)) Of[U] {

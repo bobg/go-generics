@@ -16,7 +16,8 @@ func Accum[T any](inp Of[T], f func(T, T) T) Of[T] {
 	})
 }
 
-// Accumx accumulates the result of repeatedly applying a function to the elements of an iterator.
+// Accumx is the extended form of [Accum].
+// It accumulates the result of repeatedly applying a function to the elements of an iterator.
 // If inp[i] is the ith element of the input
 // and out[i] is the ith element of the output,
 // then:
