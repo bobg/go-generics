@@ -174,7 +174,7 @@ func SliceTo[S ~[]T, T any](s S, from, to int) S {
 
 // Each runs a simple function on each item of a slice.
 func Each[S ~[]T, T any](s S, f func(T)) {
-	Eachx(s, func(_ int, val T) error {
+	_ = Eachx(s, func(_ int, val T) error {
 		f(val)
 		return nil
 	})

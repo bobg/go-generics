@@ -5,7 +5,7 @@ import "github.com/bobg/go-generics/v2/iter"
 
 // Each calls a function on each key-value pair in the given map.
 func Each[M ~map[K]V, K comparable, V any](m M, f func(K, V)) {
-	Eachx(m, func(k K, v V) error {
+	_ = Eachx(m, func(k K, v V) error {
 		f(k, v)
 		return nil
 	})

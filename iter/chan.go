@@ -88,7 +88,7 @@ func FromChan[T any](ch <-chan T, opts ...Option) Of[T] {
 // to inspect any error that occurred.
 func ToChan[T any](inp Of[T]) (<-chan T, func() error) {
 	//lint:ignore SA1012 nil context is OK here because it is not part of the public API
-	return toChan(nil, inp)
+	return toChan(nil, inp) //nolint:all // nil context is OK here because it is not part of the public API
 }
 
 // ToChanContext creates a Go channel and copies the contents of an iterator to it.

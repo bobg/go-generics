@@ -63,7 +63,7 @@ func ExampleRemoveTo() {
 
 func ExampleEachx() {
 	s := []int{100, 200, 300}
-	slices.Eachx(s, func(idx, val int) error {
+	_ = slices.Eachx(s, func(idx, val int) error {
 		fmt.Println(idx, val)
 		return nil
 	})

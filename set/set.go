@@ -68,7 +68,7 @@ func (s Of[T]) Equal(other Of[T]) bool {
 }
 
 func (s Of[T]) Each(f func(T)) {
-	s.Eachx(func(val T) error {
+	_ = s.Eachx(func(val T) error {
 		f(val)
 		return nil
 	})
