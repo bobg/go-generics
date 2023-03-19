@@ -11,7 +11,7 @@ package iter
 //
 // The slice in every non-final call of the callback is guaranteed to have a length of pageSize.
 // The final call of the callback may contain an empty slice.
-func Page[T any](inp Of[T], pageSize int, f func([]T, bool) error) error {
+func Page[F ~func(S, bool) error, S ~[]T, T any](inp Of[T], pageSize int, f F) error {
 	page := make([]T, 0, pageSize)
 	for inp.Next() {
 		page = append(page, inp.Val())

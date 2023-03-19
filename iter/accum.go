@@ -10,7 +10,7 @@ package iter
 // and
 //
 //	out[i+1] == f(out[i], inp[i+1])
-func Accum[T any](inp Of[T], f func(T, T) T) Of[T] {
+func Accum[F ~func(T, T) T, T any](inp Of[T], f F) Of[T] {
 	return Accumx(inp, func(a, b T) (T, error) {
 		return f(a, b), nil
 	})
@@ -27,7 +27,7 @@ func Accum[T any](inp Of[T], f func(T, T) T) Of[T] {
 // and
 //
 //	out[i+1] == f(out[i], inp[i+1])
-func Accumx[T any](inp Of[T], f func(T, T) (T, error)) Of[T] {
+func Accumx[F ~func(T, T) (T, error), T any](inp Of[T], f F) Of[T] {
 	return &accumIter[T]{
 		inp:   inp,
 		f:     f,

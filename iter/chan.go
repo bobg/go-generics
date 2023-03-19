@@ -135,7 +135,7 @@ func toChan[T any](ctx context.Context, inp Of[T]) (<-chan T, func() error) {
 // The function receives a channel for producing values.
 // The channel closes when the function exits.
 // Any error produced by the function is the value of the iterator's Err method.
-func Go[T any](f func(ch chan<- T) error) Of[T] {
+func Go[F ~func(chan<- T) error, T any](f F) Of[T] {
 	var (
 		ch  = make(chan T)
 		res = &chanIter[T]{ch: ch}

@@ -1,7 +1,7 @@
 package iter
 
 // Map produces an iterator of values transformed from an input iterator by a simple mapping function.
-func Map[T, U any](inp Of[T], f func(T) U) Of[U] {
+func Map[F ~func(T) U, T, U any](inp Of[T], f F) Of[U] {
 	return Mapx(inp, func(val T) (U, error) {
 		return f(val), nil
 	})
@@ -11,7 +11,7 @@ func Map[T, U any](inp Of[T], f func(T) U) Of[U] {
 // It produces an iterator of values transformed from an input iterator by a mapping function.
 // If the mapping function returns an error,
 // iteration stops and the error is available via the output iterator's Err method.
-func Mapx[T, U any](inp Of[T], f func(T) (U, error)) Of[U] {
+func Mapx[F ~func(T) (U, error), T, U any](inp Of[T], f F) Of[U] {
 	return &mapIter[T, U]{inp: inp, f: f}
 }
 
