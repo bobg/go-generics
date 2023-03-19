@@ -32,7 +32,7 @@ func SQL[T any](ctx context.Context, db QueryerContext, query string, args ...an
 		return nil, fmt.Errorf("executing query: %w", err)
 	}
 
-	res := Go(ctx, func(ch chan<- T) error {
+	res := Go(func(ch chan<- T) error {
 		defer rows.Close()
 
 		for rows.Next() {

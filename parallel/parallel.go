@@ -8,7 +8,7 @@ import (
 
 	"golang.org/x/sync/errgroup"
 
-	"github.com/bobg/go-generics/iter"
+	"github.com/bobg/go-generics/v2/iter"
 )
 
 // Error is an error type for wrapping errors returned from worker goroutines.
@@ -94,7 +94,7 @@ func Producers[T any](ctx context.Context, n int, f func(context.Context, int, f
 		close(ch)
 	}()
 
-	return iter.FromChan(ch, iter.WithContext[T](ctx), iter.WithError[T](func() error { return err }))
+	return iter.FromChan(ch, iter.WithContext(ctx), iter.WithError(func() error { return err }))
 }
 
 // Consumers launches n parallel workers each consuming values supplied by the caller.

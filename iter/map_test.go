@@ -7,7 +7,7 @@ import (
 
 func TestMap(t *testing.T) {
 	inp := FromSlice([]int{1, 2, 3, 4})
-	m := Map(inp, func(x int) (int, error) { return x * x, nil })
+	m := Map(inp, func(x int) int { return x * x })
 	s, err := ToSlice(m)
 	if err != nil {
 		t.Fatal(err)

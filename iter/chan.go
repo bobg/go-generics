@@ -4,11 +4,16 @@ import (
 	"context"
 )
 
-type chanIter[T any] struct {
-	ch    <-chan T
+type chanIterConf struct {
 	ctx   context.Context
-	latch T
 	errfn func() error
+}
+
+type chanIter[T any] struct {
+	chanIterConf
+
+	ch    <-chan T
+	latch T
 	err   error
 }
 
@@ -45,20 +50,20 @@ func (ch *chanIter[T]) Err() error {
 }
 
 // Option is the type of options that can be passed to FromChan.
-type Option[T any] func(*chanIter[T])
+type Option func(*chanIterConf)
 
 // WithContext associates a context option with a channel iterator.
-func WithContext[T any](ctx context.Context) Option[T] {
-	return func(it *chanIter[T]) {
-		it.ctx = ctx
+func WithContext(ctx context.Context) Option {
+	return func(conf *chanIterConf) {
+		conf.ctx = ctx
 	}
 }
 
 // WithError tells a channel iterator how to compute its Err value
 // after its channel closes.
-func WithError[T any](f func() error) Option[T] {
-	return func(it *chanIter[T]) {
-		it.errfn = f
+func WithError(f func() error) Option {
+	return func(conf *chanIterConf) {
+		conf.errfn = f
 	}
 }
 
@@ -69,10 +74,10 @@ func WithError[T any](f func() error) Option[T] {
 // If the WithError option is given,
 // it is called after the channel closes
 // to determine the value of the iterator's Err function.
-func FromChan[T any](ch <-chan T, opts ...Option[T]) Of[T] {
+func FromChan[T any](ch <-chan T, opts ...Option) Of[T] {
 	res := &chanIter[T]{ch: ch}
 	for _, opt := range opts {
-		opt(res)
+		opt(&res.chanIterConf)
 	}
 	return res
 }
@@ -83,7 +88,7 @@ func FromChan[T any](ch <-chan T, opts ...Option[T]) Of[T] {
 // to inspect any error that occurred.
 func ToChan[T any](inp Of[T]) (<-chan T, func() error) {
 	//lint:ignore SA1012 nil context is OK here because it is not part of the public API
-	return toChan(nil, inp)
+	return toChan(nil, inp) //nolint:all // nil context is OK here because it is not part of the public API
 }
 
 // ToChanContext creates a Go channel and copies the contents of an iterator to it.
@@ -130,10 +135,10 @@ func toChan[T any](ctx context.Context, inp Of[T]) (<-chan T, func() error) {
 // The function receives a channel for producing values.
 // The channel closes when the function exits.
 // Any error produced by the function is the value of the iterator's Err method.
-func Go[T any](ctx context.Context, f func(ch chan<- T) error) Of[T] {
+func Go[T any](f func(ch chan<- T) error) Of[T] {
 	var (
 		ch  = make(chan T)
-		res = &chanIter[T]{ch: ch, ctx: ctx}
+		res = &chanIter[T]{ch: ch}
 	)
 	go func() {
 		res.err = f(ch)

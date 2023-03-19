@@ -1,10 +1,11 @@
-package iter
+package slices
 
 import (
-	"context"
 	"fmt"
 	"reflect"
 	"testing"
+
+	"github.com/bobg/go-generics/v2/iter"
 )
 
 func TestPermutations(t *testing.T) {
@@ -25,12 +26,10 @@ func TestPermutations(t *testing.T) {
 		want: [][]int{{1, 2, 3}, {2, 1, 3}, {3, 1, 2}, {1, 3, 2}, {2, 3, 1}, {3, 2, 1}},
 	}}
 
-	ctx := context.Background()
-
 	for i, tc := range cases {
 		t.Run(fmt.Sprintf("case_%02d", i+1), func(t *testing.T) {
-			it := Permutations(ctx, tc.inp)
-			got, err := ToSlice(it)
+			it := Permutations(tc.inp)
+			got, err := iter.ToSlice(it)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -76,12 +75,10 @@ func TestCombinations(t *testing.T) {
 		want: [][]int{{1, 2, 3}},
 	}}
 
-	ctx := context.Background()
-
 	for i, tc := range cases {
 		t.Run(fmt.Sprintf("case_%02d", i+1), func(t *testing.T) {
-			it := Combinations(ctx, tc.inp, tc.n)
-			got, err := ToSlice(it)
+			it := Combinations(tc.inp, tc.n)
+			got, err := iter.ToSlice(it)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -127,12 +124,10 @@ func TestCombinationsWithReplacement(t *testing.T) {
 		want: [][]int{{1, 1, 1}, {1, 1, 2}, {1, 1, 3}, {1, 2, 2}, {1, 2, 3}, {1, 3, 3}, {2, 2, 2}, {2, 2, 3}, {2, 3, 3}, {3, 3, 3}},
 	}}
 
-	ctx := context.Background()
-
 	for i, tc := range cases {
 		t.Run(fmt.Sprintf("case_%02d", i+1), func(t *testing.T) {
-			it := CombinationsWithReplacement(ctx, tc.inp, tc.n)
-			got, err := ToSlice(it)
+			it := CombinationsWithReplacement(tc.inp, tc.n)
+			got, err := iter.ToSlice(it)
 			if err != nil {
 				t.Fatal(err)
 			}

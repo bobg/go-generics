@@ -1,15 +1,15 @@
 package iter
 
-// Slice is an iterator over a slice.
-type sliceIter[T any] struct {
-	s   []T
+// sliceIter is an iterator over a slice.
+type sliceIter[S ~[]T, T any] struct {
+	s   S
 	idx int
 }
 
-var _ Of[any] = &sliceIter[any]{}
+var _ Of[any] = &sliceIter[[]any, any]{}
 
 // Next implements Of.Next.
-func (s *sliceIter[T]) Next() bool {
+func (s *sliceIter[S, T]) Next() bool {
 	if s.idx >= len(s.s) {
 		return false
 	}
@@ -18,17 +18,17 @@ func (s *sliceIter[T]) Next() bool {
 }
 
 // Val implements Of.Val.
-func (s *sliceIter[T]) Val() T {
+func (s *sliceIter[S, T]) Val() T {
 	return s.s[s.idx-1]
 }
 
-func (*sliceIter[T]) Err() error {
+func (*sliceIter[S, T]) Err() error {
 	return nil
 }
 
 // FromSlice creates an iterator over the elements of a slice.
-func FromSlice[T any](s []T) Of[T] {
-	return &sliceIter[T]{s: s}
+func FromSlice[S ~[]T, T any](s S) Of[T] {
+	return &sliceIter[S, T]{s: s}
 }
 
 // From creates an iterator over the given items.

@@ -1,16 +1,17 @@
 package iter_test
 
 import (
-	"context"
 	"fmt"
 
-	"github.com/bobg/go-generics/iter"
+	"github.com/bobg/go-generics/v2/iter"
 )
 
 func ExampleAccum() {
-	ints := iter.Ints(1, 1)        // All integers starting at 1
-	first5 := iter.FirstN(ints, 5) // First 5 integers
-	sums := iter.Accum(first5, func(a, b int) (int, error) { return a + b, nil })
+	var (
+		ints   = iter.Ints(1, 1)      // All integers starting at 1
+		first5 = iter.FirstN(ints, 5) // First 5 integers
+		sums   = iter.Accum(first5, func(a, b int) int { return a + b })
+	)
 	for sums.Next() {
 		fmt.Println(sums.Val())
 	}
@@ -69,7 +70,7 @@ func ExampleDup() {
 }
 
 func ExampleGo() {
-	it := iter.Go(context.Background(), func(ch chan<- int) error {
+	it := iter.Go(func(ch chan<- int) error {
 		ch <- 1
 		ch <- 2
 		ch <- 3

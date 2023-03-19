@@ -11,15 +11,12 @@ func TestGroup(t *testing.T) {
 		"evens": {2, 4, 6, 8, 10},
 		"odds":  {1, 3, 5, 7, 9},
 	}
-	got, err := Group(inp, func(n int) (string, error) {
+	got := Group(inp, func(n int) string {
 		if n%2 == 0 {
-			return "evens", nil
+			return "evens"
 		}
-		return "odds", nil
+		return "odds"
 	})
-	if err != nil {
-		t.Fatal(err)
-	}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got %v, want %v", got, want)
 	}

@@ -2,8 +2,8 @@
 package set
 
 import (
-	"github.com/bobg/go-generics/iter"
-	"github.com/bobg/go-generics/maps"
+	"github.com/bobg/go-generics/v2/iter"
+	"github.com/bobg/go-generics/v2/maps"
 )
 
 // Of is a set of elements of type T.
@@ -67,11 +67,18 @@ func (s Of[T]) Equal(other Of[T]) bool {
 	return true
 }
 
-// Each calls a function on each element of the set in an indeterminate order.
+func (s Of[T]) Each(f func(T)) {
+	_ = s.Eachx(func(val T) error {
+		f(val)
+		return nil
+	})
+}
+
+// Eachx calls a function on each element of the set in an indeterminate order.
 // It is safe to add and remove items during a call to Each,
-// but that can affect the sequence of values seen later during the same Each call.
+// but that can affect the sequence of values seen later during the same Eachx call.
 // The set may be nil.
-func (s Of[T]) Each(f func(T) error) error {
+func (s Of[T]) Eachx(f func(T) error) error {
 	for val := range s {
 		err := f(val)
 		if err != nil {
@@ -111,14 +118,13 @@ func Intersect[T comparable](sets ...Of[T]) Of[T] {
 			return result
 		}
 	}
-	sets[0].Each(func(val T) error {
+	sets[0].Each(func(val T) {
 		for _, s := range sets[1:] {
 			if !s.Has(val) {
-				return nil
+				return
 			}
 		}
 		result.Add(val)
-		return nil
 	})
 	return result
 }
@@ -133,10 +139,7 @@ func Union[T comparable](sets ...Of[T]) Of[T] {
 		if s == nil {
 			continue
 		}
-		s.Each(func(val T) error {
-			result.Add(val)
-			return nil
-		})
+		s.Each(func(val T) { result.Add(val) })
 	}
 	return result
 }
@@ -146,11 +149,10 @@ func Union[T comparable](sets ...Of[T]) Of[T] {
 // The result is never nil (but may be empty).
 func Diff[T comparable](s1, s2 Of[T]) Of[T] {
 	s := New[T]()
-	s1.Each(func(val T) error {
+	s1.Each(func(val T) {
 		if !s2.Has(val) {
 			s.Add(val)
 		}
-		return nil
 	})
 	return s
 }

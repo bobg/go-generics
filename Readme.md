@@ -19,11 +19,23 @@ The `slices` package is useful in three ways:
 - It includes `Map`, `Filter`, and a few other such functions
   for processing slice elements with callbacks.
 
+It also includes combinatorial operations:
+`Permutations`, `Combinations`, and `CombinationsWithReplacement`.
+
+The `slices` package is a drop-in replacement for `golang.org/x/exp/slices`
+(which will become part of the stdlib [in Go 1.21](https://github.com/golang/go/issues/57433))
+with one difference:
+the index values passed to `Insert`, `Delete`, and `Replace`
+may be negative for counting backward from the end of the slice.
+
 # Maps
 
 The `maps` package has a few convenience functions
 for duplicating, inverting, constructing, and iterating over maps,
 as well as for testing their equality.
+
+The `maps` package is a drop-in replacement for `golang.org/x/exp/maps`,
+(which will become part of the stdlib [in Go 1.21](https://github.com/golang/go/issues/57436)).
 
 # Set
 
@@ -40,9 +52,7 @@ that can convert to and from Go slices, maps, and channels,
 and produce iterators over the values from function calls and goroutines.
 There is also an iterator over the results of a SQL query;
 the usual collection of functions on iterators
-(`Filter`, `Map`, `Concat`, `Accum`, etc.);
-and combinatorial operations
-(`Permutations`, `Combinations`, and `CombinationsWithReplacement`).
+(`Filter`, `Map`, `Concat`, `Accum`, etc.).
 
 # Parallel
 

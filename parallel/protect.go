@@ -37,14 +37,14 @@ import (
 // In other words,
 // if the type is int and caller A does this:
 //
-//   val := reader()
-//   val++
+//	val := reader()
+//	val++
 //
 // it will not affect the value that caller B sees when it does its own call to reader().
 // But if the type is *int and caller A does this:
 //
-//   val := reader()
-//   *val++
+//	val := reader()
+//	*val++
 //
 // then the change in the pointed-to value _will_ be seen by caller B.
 //

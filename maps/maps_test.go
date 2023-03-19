@@ -2,10 +2,9 @@ package maps
 
 import (
 	"reflect"
-	"sort"
 	"testing"
 
-	"github.com/bobg/go-generics/iter"
+	"github.com/bobg/go-generics/v2/iter"
 )
 
 var (
@@ -13,22 +12,11 @@ var (
 	testMapDups = map[int]int{1: 2, 3: 2, 7: 14}
 )
 
-func TestDup(t *testing.T) {
-	got := Dup(testMap)
-	if !reflect.DeepEqual(got, testMap) {
-		t.Errorf("got %v, want %v", got, testMap)
-	}
-}
-
 func TestEach(t *testing.T) {
 	var sum int
-	err := Each(testMap, func(k, v int) error {
+	Each(testMap, func(k, v int) {
 		sum += k * v
-		return nil
 	})
-	if err != nil {
-		t.Fatal(err)
-	}
 	if sum != 118 {
 		t.Errorf("got %d, want 118", sum)
 	}
@@ -72,34 +60,5 @@ func TestInvertMulti(t *testing.T) {
 
 	if !reflect.DeepEqual(got, want1) && !reflect.DeepEqual(got, want2) {
 		t.Errorf("got %v, want %v", got, want1)
-	}
-}
-
-func TestEqual(t *testing.T) {
-	inp := Dup(testMap)
-	if !Equal(inp, testMap) {
-		t.Errorf("Equal says %v and %v are not equal", inp, testMap)
-	}
-	inp = Invert(inp)
-	if Equal(inp, testMap) {
-		t.Errorf("Equal says %v and %v are equal", inp, testMap)
-	}
-}
-
-func TestKeys(t *testing.T) {
-	m := map[string]int{"a": 1, "b": 2, "c": 3}
-	keys := Keys(m)
-	sort.Strings(keys)
-	if !reflect.DeepEqual(keys, []string{"a", "b", "c"}) {
-		t.Errorf("got %v, want [a b c]", keys)
-	}
-}
-
-func TestValues(t *testing.T) {
-	m := map[int]string{1: "a", 2: "b", 3: "c"}
-	vals := Values(m)
-	sort.Strings(vals)
-	if !reflect.DeepEqual(vals, []string{"a", "b", "c"}) {
-		t.Errorf("got %v, want [a b c]", vals)
 	}
 }
