@@ -35,7 +35,7 @@ func (e Error) Unwrap() error {
 //
 // The resulting slice has length n.
 // The value at position i comes from worker i.
-func Values[T any](ctx context.Context, n int, f func(context.Context, int) (T, error)) ([]T, error) {
+func Values[F ~func(context.Context, int) (T, error), T any](ctx context.Context, n int, f F) ([]T, error) {
 	g, ctx := errgroup.WithContext(ctx)
 	result := make([]T, n)
 
@@ -69,7 +69,7 @@ func Values[T any](ctx context.Context, n int, f func(context.Context, int) (T, 
 // An error from any worker cancels them all.
 //
 // The caller gets an iterator over the values produced.
-func Producers[T any](ctx context.Context, n int, f func(context.Context, int, func(T) error) error) iter.Of[T] {
+func Producers[F ~func(context.Context, int, func(T) error) error, T any](ctx context.Context, n int, f F) iter.Of[T] {
 	ch := make(chan T)
 	g, innerCtx := errgroup.WithContext(ctx)
 
@@ -117,7 +117,7 @@ func Producers[T any](ctx context.Context, n int, f func(context.Context, int, f
 // After any error, the value-sending callback will return an error.
 // (Not the original error, however.
 // For that, the caller should still invoke the close callback.)
-func Consumers[T any](ctx context.Context, n int, f func(context.Context, int, T) error) (func(T) error, func() error) {
+func Consumers[F ~func(context.Context, int, T) error, T any](ctx context.Context, n int, f F) (func(T) error, func() error) {
 	ch := make(chan T, n)
 
 	g, ctx := errgroup.WithContext(ctx)
@@ -167,7 +167,7 @@ func Consumers[T any](ctx context.Context, n int, f func(context.Context, int, T
 //
 // Each call of the callback is synchronous.
 // Any desired concurrency is the responsibility of the caller.
-func Pool[T, U any](n int, f func(T) (U, error)) func(T) (U, error) {
+func Pool[F ~func(T) (U, error), T, U any](n int, f F) func(T) (U, error) {
 	var (
 		running int
 		mu      sync.Mutex
