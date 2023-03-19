@@ -34,7 +34,7 @@ The `maps` package has a few convenience functions
 for duplicating, inverting, constructing, and iterating over maps,
 as well as for testing their equality.
 
-The `maps` package is a drop-in replacement for `golang.org/x/exp/maps`,
+The `maps` package is a drop-in replacement for `golang.org/x/exp/maps`
 (which will become part of the stdlib [in Go 1.21](https://github.com/golang/go/issues/57436)).
 
 # Set
