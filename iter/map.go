@@ -11,7 +11,7 @@ func Map[F ~func(T) U, T, U any](inp Of[T], f F) Of[U] {
 // It produces an iterator of values transformed from an input iterator by a mapping function.
 // If the mapping function returns an error,
 // iteration stops and the error is available via the output iterator's Err method.
-func Mapx[F func(T) (U, error), T, U any](inp Of[T], f F) Of[U] {
+func Mapx[F ~func(T) (U, error), T, U any](inp Of[T], f F) Of[U] {
 	return &mapIter[T, U]{inp: inp, f: f}
 }
 

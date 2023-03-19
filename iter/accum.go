@@ -27,7 +27,7 @@ func Accum[F ~func(T, T) T, T any](inp Of[T], f F) Of[T] {
 // and
 //
 //	out[i+1] == f(out[i], inp[i+1])
-func Accumx[F func(T, T) (T, error), T any](inp Of[T], f F) Of[T] {
+func Accumx[F ~func(T, T) (T, error), T any](inp Of[T], f F) Of[T] {
 	return &accumIter[T]{
 		inp:   inp,
 		f:     f,
