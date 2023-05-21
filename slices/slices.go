@@ -209,6 +209,9 @@ func Map[S ~[]T, T, U any](s S, f func(T) U) []U {
 // If any call to the function returns an error,
 // Mapx stops looping and exits with the error.
 func Mapx[S ~[]T, T, U any](s S, f func(int, T) (U, error)) ([]U, error) {
+	if len(s) == 0 {
+		return nil, nil
+	}
 	result := make([]U, 0, len(s))
 	for i, val := range s {
 		u, err := f(i, val)
