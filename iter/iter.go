@@ -32,7 +32,7 @@ type Of[T any] interface {
 //	for val := range iter.All(iterator) {
 //	  ...
 //	}
-//	if err := iteration.Err(); err != nil {
+//	if err := iterator.Err(); err != nil {
 //	  ...
 //	}
 func All[T any](it Of[T]) func(yield func(T) bool) bool {
