@@ -24,3 +24,24 @@ type Of[T any] interface {
 	// It may be called only after Next returns false.
 	Err() error
 }
+
+// All implements the range-based iteration proposal at https://github.com/golang/go/issues/61405.
+//
+// Usage:
+//
+//	for val := range iter.All(iterator) {
+//	  ...
+//	}
+//	if err := iteration.Err(); err != nil {
+//	  ...
+//	}
+func All[T any](it Of[T]) func(yield func(T) bool) bool {
+	return func(yield func(T) bool) bool {
+		for it.Next() {
+			if !yield(it.Val()) {
+				return false
+			}
+		}
+		return true
+	}
+}
