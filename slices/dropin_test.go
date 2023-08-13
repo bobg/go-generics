@@ -179,12 +179,12 @@ var compareFloatTests = []struct {
 	{
 		[]float64{1, math.NaN(), 3},
 		[]float64{1, 2, math.NaN()},
-		0,
+		-1,
 	},
 	{
 		[]float64{1, math.NaN(), 3, 4},
 		[]float64{1, 2, math.NaN()},
-		+1,
+		-1,
 	},
 }
 
@@ -237,6 +237,25 @@ func cmp[T constraints.Ordered](v1, v2 T) int {
 	}
 }
 
+func cmpfloat64(a, b float64) int {
+	if math.IsNaN(a) {
+		if math.IsNaN(b) {
+			return 0
+		}
+		return -1
+	}
+	if math.IsNaN(b) {
+		return 1
+	}
+	if a < b {
+		return -1
+	}
+	if a > b {
+		return 1
+	}
+	return 0
+}
+
 func TestCompareFunc(t *testing.T) {
 	intWant := func(want bool) string {
 		if want {
@@ -261,8 +280,8 @@ func TestCompareFunc(t *testing.T) {
 		}
 	}
 	for _, test := range compareFloatTests {
-		if got := CompareFunc(test.s1, test.s2, cmp[float64]); got != test.want {
-			t.Errorf("CompareFunc(%v, %v, cmp[float64]) = %d, want %d", test.s1, test.s2, got, test.want)
+		if got := CompareFunc(test.s1, test.s2, cmpfloat64); got != test.want {
+			t.Errorf("CompareFunc(%v, %v, cmpfloat64) = %d, want %d", test.s1, test.s2, got, test.want)
 		}
 	}
 
@@ -724,7 +743,7 @@ func TestSortIntSlice(t *testing.T) {
 
 func TestSortFuncIntSlice(t *testing.T) {
 	data := Clone(ints[:])
-	SortFunc(data, func(a, b int) bool { return a < b })
+	SortFunc(data, func(a, b int) int { return a - b })
 	if !IsSorted(data) {
 		t.Errorf("sorted %v", ints)
 		t.Errorf("   got %v", data)
@@ -790,8 +809,8 @@ type intPair struct {
 type intPairs []intPair
 
 // Pairs compare on a only.
-func intPairLess(x, y intPair) bool {
-	return x.a < y.a
+func intPairCmp(x, y intPair) int {
+	return x.a - y.a
 }
 
 // Record initial order in B.
@@ -829,12 +848,12 @@ func TestStability(t *testing.T) {
 	for i := 0; i < len(data); i++ {
 		data[i].a = rand.Intn(m)
 	}
-	if IsSortedFunc(data, intPairLess) {
+	if IsSortedFunc(data, intPairCmp) {
 		t.Fatalf("terrible rand.rand")
 	}
 	data.initB()
-	SortStableFunc(data, intPairLess)
-	if !IsSortedFunc(data, intPairLess) {
+	SortStableFunc(data, intPairCmp)
+	if !IsSortedFunc(data, intPairCmp) {
 		t.Errorf("Stable didn't sort %d ints", n)
 	}
 	if !data.inOrder() {
@@ -843,8 +862,8 @@ func TestStability(t *testing.T) {
 
 	// already sorted
 	data.initB()
-	SortStableFunc(data, intPairLess)
-	if !IsSortedFunc(data, intPairLess) {
+	SortStableFunc(data, intPairCmp)
+	if !IsSortedFunc(data, intPairCmp) {
 		t.Errorf("Stable shuffled sorted %d ints (order)", n)
 	}
 	if !data.inOrder() {
@@ -856,8 +875,8 @@ func TestStability(t *testing.T) {
 		data[i].a = len(data) - i
 	}
 	data.initB()
-	SortStableFunc(data, intPairLess)
-	if !IsSortedFunc(data, intPairLess) {
+	SortStableFunc(data, intPairCmp)
+	if !IsSortedFunc(data, intPairCmp) {
 		t.Errorf("Stable didn't sort %d ints", n)
 	}
 	if !data.inOrder() {
