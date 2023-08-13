@@ -8,7 +8,7 @@
 // in Go 1.21 (https://go.dev/doc/go1.21#maps).
 package maps
 
-import "github.com/bobg/go-generics/v2/iter"
+import "github.com/bobg/go-generics/v3/iter"
 
 // Each calls a function on each key-value pair in the given map.
 func Each[M ~map[K]V, K comparable, V any](m M, f func(K, V)) {
@@ -62,4 +62,31 @@ func InvertMulti[M ~map[K]V, K, V comparable](m M) map[V][]K {
 		result[v] = append(result[v], k)
 	}
 	return result
+}
+
+// Keys returns the keys of the map m.
+// The keys will be in an indeterminate order.
+func Keys[M ~map[K]V, K comparable, V any](m M) []K {
+	result := make([]K, 0, len(m))
+	for k := range m {
+		result = append(result, k)
+	}
+	return result
+}
+
+// Values returns the values of the map m.
+// The values will be in an indeterminate order.
+func Values[M ~map[K]V, K comparable, V any](m M) []V {
+	result := make([]V, 0, len(m))
+	for _, v := range m {
+		result = append(result, v)
+	}
+	return result
+}
+
+// Clear removes all entries from m, leaving it empty.
+func Clear[M ~map[K]V, K comparable, V any](m M) {
+	for k := range m {
+		delete(m, k)
+	}
 }

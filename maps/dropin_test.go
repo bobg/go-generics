@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/bobg/go-generics/v2/slices"
+	"github.com/bobg/go-generics/v3/slices"
 )
 
 var m1 = map[int]int{1: 2, 2: 4, 4: 8, 8: 16}

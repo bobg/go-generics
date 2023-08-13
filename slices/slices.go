@@ -17,12 +17,10 @@
 package slices
 
 import (
+	"slices"
 	"sort"
 
-	// TODO: import slices from stdlib after Go 1.21.
-	"golang.org/x/exp/slices"
-
-	"github.com/bobg/go-generics/v2/internal"
+	"github.com/bobg/go-generics/v3/internal"
 )
 
 // Get gets the idx'th element of s.
@@ -56,7 +54,7 @@ func Append[S ~[]T, T any](s S, vals ...T) S {
 // After the insert, the first new value has position idx.
 //
 // If idx < 0, it counts from the end of s.
-// (This is a change from the behavior of "golang.org/x/exp/slices".Insert.)
+// (This is a change from the behavior of Go's standard slices.Insert.)
 //
 // The input slice is modified.
 //
@@ -66,6 +64,31 @@ func Insert[S ~[]T, T any](s S, idx int, vals ...T) S {
 		idx += len(s)
 	}
 	return slices.Insert(s, idx, vals...)
+}
+
+// Delete removes the elements s[i:j] from s, returning the modified slice.
+// Delete panics if s[i:j] is not a valid slice of s.
+// Delete is O(len(s)-j), so if many items must be deleted, it is better to
+// make a single call deleting them all together than to delete one at a time.
+// Delete might not modify the elements s[len(s)-(j-i):len(s)]. If those
+// elements contain pointers you might consider zeroing those elements so that
+// objects they reference can be garbage collected.
+//
+// If i < 0 it counts from the end of s.
+// If j <= 0 it counts from the end of s.
+// (This is a change from the behavior of Go's standard slices.Delete.)
+func Delete[S ~[]E, E any](s S, i, j int) S {
+	return RemoveTo(s, i, j)
+}
+
+// Replace replaces the elements s[i:j] by the given v, and returns the
+// modified slice. Replace panics if s[i:j] is not a valid slice of s.
+//
+// If i < 0 it counts from the end of s.
+// If j <= 0 it counts from the end of s.
+// (This is a change from the behavior of Go's standard slices.Replace.)
+func Replace[S ~[]E, E any](s S, i, j int, v ...E) S {
+	return ReplaceTo(s, i, j, v...)
 }
 
 // ReplaceN replaces the n values of s beginning at position idx with the given values.

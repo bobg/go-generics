@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/bobg/go-generics/v2/iter"
+	"github.com/bobg/go-generics/v3/iter"
 )
 
 func TestPermutations(t *testing.T) {

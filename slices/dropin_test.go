@@ -7,14 +7,13 @@
 package slices
 
 import (
+	"cmp"
 	"math"
 	"math/rand"
 	"sort"
 	"strconv"
 	"strings"
 	"testing"
-
-	"golang.org/x/exp/constraints"
 )
 
 var raceEnabled bool
@@ -89,7 +88,7 @@ func equalNaN[T comparable](v1, v2 T) bool {
 }
 
 // offByOne returns true if integers v1 and v2 differ by 1.
-func offByOne[E constraints.Integer](v1, v2 E) bool {
+func offByOne(v1, v2 int) bool {
 	return v1 == v2+1 || v1 == v2-1
 }
 
@@ -110,10 +109,10 @@ func TestEqualFunc(t *testing.T) {
 
 	s1 := []int{1, 2, 3}
 	s2 := []int{2, 3, 4}
-	if EqualFunc(s1, s1, offByOne[int]) {
+	if EqualFunc(s1, s1, offByOne) {
 		t.Errorf("EqualFunc(%v, %v, offByOne) = true, want false", s1, s1)
 	}
-	if !EqualFunc(s1, s2, offByOne[int]) {
+	if !EqualFunc(s1, s2, offByOne) {
 		t.Errorf("EqualFunc(%v, %v, offByOne) = false, want true", s1, s2)
 	}
 
@@ -179,12 +178,12 @@ var compareFloatTests = []struct {
 	{
 		[]float64{1, math.NaN(), 3},
 		[]float64{1, 2, math.NaN()},
-		0,
+		-1,
 	},
 	{
 		[]float64{1, math.NaN(), 3, 4},
 		[]float64{1, 2, math.NaN()},
-		+1,
+		-1,
 	},
 }
 
@@ -227,16 +226,6 @@ func equalToCmp[T comparable](eq func(T, T) bool) func(T, T) int {
 	}
 }
 
-func cmp[T constraints.Ordered](v1, v2 T) int {
-	if v1 < v2 {
-		return -1
-	} else if v1 > v2 {
-		return 1
-	} else {
-		return 0
-	}
-}
-
 func TestCompareFunc(t *testing.T) {
 	intWant := func(want bool) string {
 		if want {
@@ -256,19 +245,19 @@ func TestCompareFunc(t *testing.T) {
 	}
 
 	for _, test := range compareIntTests {
-		if got := CompareFunc(test.s1, test.s2, cmp[int]); got != test.want {
-			t.Errorf("CompareFunc(%v, %v, cmp[int]) = %d, want %d", test.s1, test.s2, got, test.want)
+		if got := CompareFunc(test.s1, test.s2, cmp.Compare); got != test.want {
+			t.Errorf("CompareFunc(%v, %v, cmp.Compare) = %d, want %d", test.s1, test.s2, got, test.want)
 		}
 	}
 	for _, test := range compareFloatTests {
-		if got := CompareFunc(test.s1, test.s2, cmp[float64]); got != test.want {
-			t.Errorf("CompareFunc(%v, %v, cmp[float64]) = %d, want %d", test.s1, test.s2, got, test.want)
+		if got := CompareFunc(test.s1, test.s2, cmp.Compare); got != test.want {
+			t.Errorf("CompareFunc(%v, %v, cmp.Compare) = %d, want %d", test.s1, test.s2, got, test.want)
 		}
 	}
 
 	s1 := []int{1, 2, 3}
 	s2 := []int{2, 3, 4}
-	if got := CompareFunc(s1, s2, equalToCmp(offByOne[int])); got != 0 {
+	if got := CompareFunc(s1, s2, equalToCmp(offByOne)); got != 0 {
 		t.Errorf("CompareFunc(%v, %v, offByOne) = %d, want 0", s1, s2, got)
 	}
 
@@ -724,7 +713,7 @@ func TestSortIntSlice(t *testing.T) {
 
 func TestSortFuncIntSlice(t *testing.T) {
 	data := Clone(ints[:])
-	SortFunc(data, func(a, b int) bool { return a < b })
+	SortFunc(data, func(a, b int) int { return a - b })
 	if !IsSorted(data) {
 		t.Errorf("sorted %v", ints)
 		t.Errorf("   got %v", data)
@@ -790,8 +779,8 @@ type intPair struct {
 type intPairs []intPair
 
 // Pairs compare on a only.
-func intPairLess(x, y intPair) bool {
-	return x.a < y.a
+func intPairCmp(x, y intPair) int {
+	return x.a - y.a
 }
 
 // Record initial order in B.
@@ -829,12 +818,12 @@ func TestStability(t *testing.T) {
 	for i := 0; i < len(data); i++ {
 		data[i].a = rand.Intn(m)
 	}
-	if IsSortedFunc(data, intPairLess) {
+	if IsSortedFunc(data, intPairCmp) {
 		t.Fatalf("terrible rand.rand")
 	}
 	data.initB()
-	SortStableFunc(data, intPairLess)
-	if !IsSortedFunc(data, intPairLess) {
+	SortStableFunc(data, intPairCmp)
+	if !IsSortedFunc(data, intPairCmp) {
 		t.Errorf("Stable didn't sort %d ints", n)
 	}
 	if !data.inOrder() {
@@ -843,8 +832,8 @@ func TestStability(t *testing.T) {
 
 	// already sorted
 	data.initB()
-	SortStableFunc(data, intPairLess)
-	if !IsSortedFunc(data, intPairLess) {
+	SortStableFunc(data, intPairCmp)
+	if !IsSortedFunc(data, intPairCmp) {
 		t.Errorf("Stable shuffled sorted %d ints (order)", n)
 	}
 	if !data.inOrder() {
@@ -856,8 +845,8 @@ func TestStability(t *testing.T) {
 		data[i].a = len(data) - i
 	}
 	data.initB()
-	SortStableFunc(data, intPairLess)
-	if !IsSortedFunc(data, intPairLess) {
+	SortStableFunc(data, intPairCmp)
+	if !IsSortedFunc(data, intPairCmp) {
 		t.Errorf("Stable didn't sort %d ints", n)
 	}
 	if !data.inOrder() {

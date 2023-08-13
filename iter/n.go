@@ -1,6 +1,6 @@
 package iter
 
-import "github.com/bobg/go-generics/v2/internal"
+import "github.com/bobg/go-generics/v3/internal"
 
 // FirstN produces an iterator containing the first n elements of the input
 // (or all of the input, if there are fewer than n elements).
