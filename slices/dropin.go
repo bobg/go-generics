@@ -147,13 +147,13 @@ func Sort[E constraints.Ordered](x []E) {
 // SortFunc requires that less is a strict weak ordering.
 // See https://en.wikipedia.org/wiki/Weak_ordering#Strict_weak_orderings.
 func SortFunc[E any](x []E, less func(a, b E) bool) {
-	slices.SortFunc(x, less)
+	slices.SortFunc(x, lessToCmp(less))
 }
 
 // SortStableFunc sorts the slice x while keeping the original order of equal
 // elements, using less to compare elements.
 func SortStableFunc[E any](x []E, less func(a, b E) bool) {
-	slices.SortStableFunc(x, less)
+	slices.SortStableFunc(x, lessToCmp(less))
 }
 
 // IsSorted reports whether x is sorted in ascending order.
@@ -164,7 +164,7 @@ func IsSorted[E constraints.Ordered](x []E) bool {
 // IsSortedFunc reports whether x is sorted in ascending order, with less as the
 // comparison function.
 func IsSortedFunc[E any](x []E, less func(a, b E) bool) bool {
-	return slices.IsSortedFunc(x, less)
+	return slices.IsSortedFunc(x, lessToCmp(less))
 }
 
 // BinarySearch searches for target in a sorted slice and returns the position
@@ -182,4 +182,16 @@ func BinarySearch[E constraints.Ordered](x []E, target E) (int, bool) {
 // a > b.
 func BinarySearchFunc[E, T any](x []E, target T, cmp func(E, T) int) (int, bool) {
 	return slices.BinarySearchFunc(x, target, cmp)
+}
+
+func lessToCmp[T any](less func(a, b T) bool) func(T, T) int {
+	return func(a, b T) int {
+		if less(a, b) {
+			return -1
+		}
+		if less(b, a) {
+			return 1
+		}
+		return 0
+	}
 }
