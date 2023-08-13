@@ -3,7 +3,7 @@ package iter_test
 import (
 	"fmt"
 
-	"github.com/bobg/go-generics/v2/iter"
+	"github.com/bobg/go-generics/v3/iter"
 )
 
 func ExampleAccum() {

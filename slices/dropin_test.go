@@ -7,14 +7,13 @@
 package slices
 
 import (
+	"cmp"
 	"math"
 	"math/rand"
 	"sort"
 	"strconv"
 	"strings"
 	"testing"
-
-	"golang.org/x/exp/constraints"
 )
 
 var raceEnabled bool
@@ -89,7 +88,7 @@ func equalNaN[T comparable](v1, v2 T) bool {
 }
 
 // offByOne returns true if integers v1 and v2 differ by 1.
-func offByOne[E constraints.Integer](v1, v2 E) bool {
+func offByOne(v1, v2 int) bool {
 	return v1 == v2+1 || v1 == v2-1
 }
 
@@ -110,10 +109,10 @@ func TestEqualFunc(t *testing.T) {
 
 	s1 := []int{1, 2, 3}
 	s2 := []int{2, 3, 4}
-	if EqualFunc(s1, s1, offByOne[int]) {
+	if EqualFunc(s1, s1, offByOne) {
 		t.Errorf("EqualFunc(%v, %v, offByOne) = true, want false", s1, s1)
 	}
-	if !EqualFunc(s1, s2, offByOne[int]) {
+	if !EqualFunc(s1, s2, offByOne) {
 		t.Errorf("EqualFunc(%v, %v, offByOne) = false, want true", s1, s2)
 	}
 
@@ -227,35 +226,6 @@ func equalToCmp[T comparable](eq func(T, T) bool) func(T, T) int {
 	}
 }
 
-func cmp[T constraints.Ordered](v1, v2 T) int {
-	if v1 < v2 {
-		return -1
-	} else if v1 > v2 {
-		return 1
-	} else {
-		return 0
-	}
-}
-
-func cmpfloat64(a, b float64) int {
-	if math.IsNaN(a) {
-		if math.IsNaN(b) {
-			return 0
-		}
-		return -1
-	}
-	if math.IsNaN(b) {
-		return 1
-	}
-	if a < b {
-		return -1
-	}
-	if a > b {
-		return 1
-	}
-	return 0
-}
-
 func TestCompareFunc(t *testing.T) {
 	intWant := func(want bool) string {
 		if want {
@@ -275,19 +245,19 @@ func TestCompareFunc(t *testing.T) {
 	}
 
 	for _, test := range compareIntTests {
-		if got := CompareFunc(test.s1, test.s2, cmp[int]); got != test.want {
-			t.Errorf("CompareFunc(%v, %v, cmp[int]) = %d, want %d", test.s1, test.s2, got, test.want)
+		if got := CompareFunc(test.s1, test.s2, cmp.Compare); got != test.want {
+			t.Errorf("CompareFunc(%v, %v, cmp.Compare) = %d, want %d", test.s1, test.s2, got, test.want)
 		}
 	}
 	for _, test := range compareFloatTests {
-		if got := CompareFunc(test.s1, test.s2, cmpfloat64); got != test.want {
-			t.Errorf("CompareFunc(%v, %v, cmpfloat64) = %d, want %d", test.s1, test.s2, got, test.want)
+		if got := CompareFunc(test.s1, test.s2, cmp.Compare); got != test.want {
+			t.Errorf("CompareFunc(%v, %v, cmp.Compare) = %d, want %d", test.s1, test.s2, got, test.want)
 		}
 	}
 
 	s1 := []int{1, 2, 3}
 	s2 := []int{2, 3, 4}
-	if got := CompareFunc(s1, s2, equalToCmp(offByOne[int])); got != 0 {
+	if got := CompareFunc(s1, s2, equalToCmp(offByOne)); got != 0 {
 		t.Errorf("CompareFunc(%v, %v, offByOne) = %d, want 0", s1, s2, got)
 	}
 

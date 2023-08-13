@@ -17,11 +17,10 @@
 package slices
 
 import (
+	"slices"
 	"sort"
 
-	"golang.org/x/exp/slices"
-
-	"github.com/bobg/go-generics/v2/internal"
+	"github.com/bobg/go-generics/v3/internal"
 )
 
 // Get gets the idx'th element of s.
@@ -87,7 +86,7 @@ func Delete[S ~[]E, E any](s S, i, j int) S {
 //
 // If i < 0 it counts from the end of s.
 // If j <= 0 it counts from the end of s.
-// (This is a change from the behavior of "golang.org/x/exp/slices".Replace.)
+// (This is a change from the behavior of Go's standard slices.Replace.)
 func Replace[S ~[]E, E any](s S, i, j int, v ...E) S {
 	return ReplaceTo(s, i, j, v...)
 }

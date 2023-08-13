@@ -1,20 +1,8 @@
 package maps
 
-import "golang.org/x/exp/maps"
+import "maps"
 
-// This file contains entrypoints for each of the functions in in golang.org/x/exp/maps.
-
-// Keys returns the keys of the map m.
-// The keys will be in an indeterminate order.
-func Keys[M ~map[K]V, K comparable, V any](m M) []K {
-	return maps.Keys(m)
-}
-
-// Values returns the values of the map m.
-// The values will be in an indeterminate order.
-func Values[M ~map[K]V, K comparable, V any](m M) []V {
-	return maps.Values(m)
-}
+// This file contains entrypoints for each of the functions in the standard Go maps package.
 
 // Equal reports whether two maps contain the same key/value pairs.
 // Values are compared using ==.
@@ -26,11 +14,6 @@ func Equal[M1, M2 ~map[K]V, K, V comparable](m1 M1, m2 M2) bool {
 // Keys are still compared with ==.
 func EqualFunc[M1 ~map[K]V1, M2 ~map[K]V2, K comparable, V1, V2 any](m1 M1, m2 M2, eq func(V1, V2) bool) bool {
 	return maps.EqualFunc(m1, m2, eq)
-}
-
-// Clear removes all entries from m, leaving it empty.
-func Clear[M ~map[K]V, K comparable, V any](m M) {
-	maps.Clear(m)
 }
 
 // Clone returns a copy of m.  This is a shallow clone:

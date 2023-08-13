@@ -1,7 +1,7 @@
 package slices
 
 import (
-	"github.com/bobg/go-generics/v2/iter"
+	"github.com/bobg/go-generics/v3/iter"
 )
 
 // Permutations produces an iterator over all permutations of s.

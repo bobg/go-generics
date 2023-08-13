@@ -1,11 +1,11 @@
 package slices
 
 import (
-	"golang.org/x/exp/constraints"
-	"golang.org/x/exp/slices"
+	"cmp"
+	"slices"
 )
 
-// This file contains entrypoints for each of the functions in in golang.org/x/exp/slices
+// This file contains entrypoints for each of the functions in the standard Go slices package
 // (except those, like Insert, extended by other functions in this package).
 
 // Equal reports whether two slices are equal: the same length and all
@@ -33,7 +33,7 @@ func EqualFunc[S1 ~[]E1, S2 ~[]E2, E1, E2 any](s1 S1, s2 S2, eq func(E1, E2) boo
 // If both slices are equal until one of them ends, the shorter slice is
 // considered less than the longer one.
 // The result is 0 if s1 == s2, -1 if s1 < s2, and +1 if s1 > s2.
-func Compare[S ~[]E, E constraints.Ordered](s1, s2 S) int {
+func Compare[S ~[]E, E cmp.Ordered](s1, s2 S) int {
 	return slices.Compare(s1, s2)
 }
 
@@ -122,7 +122,7 @@ func Reverse[S ~[]E, E any](s S) {
 
 // Sort sorts a slice of any ordered type in ascending order.
 // When sorting floating-point numbers, NaNs are ordered before other values.
-func Sort[S ~[]E, E constraints.Ordered](x S) {
+func Sort[S ~[]E, E cmp.Ordered](x S) {
 	slices.Sort(x)
 }
 
@@ -144,7 +144,7 @@ func SortStableFunc[S ~[]E, E any](x S, cmp func(a, b E) int) {
 }
 
 // IsSorted reports whether x is sorted in ascending order.
-func IsSorted[S ~[]E, E constraints.Ordered](x S) bool {
+func IsSorted[S ~[]E, E cmp.Ordered](x S) bool {
 	return slices.IsSorted(x)
 }
 
@@ -157,7 +157,7 @@ func IsSortedFunc[S ~[]E, E any](x S, cmp func(a, b E) int) bool {
 // Min returns the minimal value in x. It panics if x is empty.
 // For floating-point numbers, Min propagates NaNs (any NaN value in x
 // forces the output to be NaN).
-func Min[S ~[]E, E constraints.Ordered](x S) E {
+func Min[S ~[]E, E cmp.Ordered](x S) E {
 	return slices.Min(x)
 }
 
@@ -171,7 +171,7 @@ func MinFunc[S ~[]E, E any](x S, cmp func(a, b E) int) E {
 // Max returns the maximal value in x. It panics if x is empty.
 // For floating-point E, Max propagates NaNs (any NaN value in x
 // forces the output to be NaN).
-func Max[S ~[]E, E constraints.Ordered](x S) E {
+func Max[S ~[]E, E cmp.Ordered](x S) E {
 	return slices.Max(x)
 }
 
@@ -186,7 +186,7 @@ func MaxFunc[S ~[]E, E any](x S, cmp func(a, b E) int) E {
 // where target is found, or the position where target would appear in the
 // sort order; it also returns a bool saying whether the target is really found
 // in the slice. The slice must be sorted in increasing order.
-func BinarySearch[S ~[]E, E constraints.Ordered](x S, target E) (int, bool) {
+func BinarySearch[S ~[]E, E cmp.Ordered](x S, target E) (int, bool) {
 	return slices.BinarySearch(x, target)
 }
 
