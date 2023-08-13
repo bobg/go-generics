@@ -1,6 +1,5 @@
 package slices
 
-// TODO: import slices from stdlib after Go 1.21.
 import (
 	"golang.org/x/exp/constraints"
 	"golang.org/x/exp/slices"

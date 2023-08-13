@@ -5,6 +5,15 @@
 // and it includes Map, Filter,
 // and a few other such functions
 // for processing slice elements with callbacks.
+//
+// This package is a drop-in replacement
+// for the slices package
+// added to the Go stdlib
+// in Go 1.21 (https://go.dev/doc/go1.21#slices).
+// There is one difference:
+// this version of slices
+// allows the index value passed to `Insert`, `Delete`, and `Replace`
+// to be negative for counting backward from the end of the slice.
 package slices
 
 import (

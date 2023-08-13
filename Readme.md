@@ -22,11 +22,14 @@ The `slices` package is useful in three ways:
 It also includes combinatorial operations:
 `Permutations`, `Combinations`, and `CombinationsWithReplacement`.
 
-The `slices` package is a drop-in replacement for `golang.org/x/exp/slices`
-(which will become part of the stdlib [in Go 1.21](https://github.com/golang/go/issues/57433))
-with one difference:
-the index values passed to `Insert`, `Delete`, and `Replace`
-may be negative for counting backward from the end of the slice.
+The `slices` package is a drop-in replacement
+for the `slices` package
+added to the Go stdlib
+in [Go 1.21](https://go.dev/doc/go1.21#slices).
+There is one difference:
+this version of `slices`
+allows the index value passed to `Insert`, `Delete`, and `Replace`
+to be negative for counting backward from the end of the slice.
 
 # Maps
 
@@ -34,8 +37,10 @@ The `maps` package has a few convenience functions
 for duplicating, inverting, constructing, and iterating over maps,
 as well as for testing their equality.
 
-The `maps` package is a drop-in replacement for `golang.org/x/exp/maps`
-(which will become part of the stdlib [in Go 1.21](https://github.com/golang/go/issues/57436)).
+The `maps` package is a drop-in replacement
+for the `maps` package
+added to the Go stdlib
+in [Go 1.21](https://go.dev/doc/go1.21#maps).
 
 # Set
 

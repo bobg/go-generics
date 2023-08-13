@@ -1,6 +1,5 @@
 package maps
 
-// TODO: import maps from stdlib after Go 1.21.
 import "golang.org/x/exp/maps"
 
 // This file contains entrypoints for each of the functions in in golang.org/x/exp/maps.

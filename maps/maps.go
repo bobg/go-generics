@@ -1,4 +1,11 @@
-// Package maps contains utility functions for working with Go maps.
+// Package maps contains functions for working with Go maps:
+// duplicating, inverting, constructing, and iterating over them,
+// as well as testing their equality.
+//
+// The maps package is a drop-in replacement
+// for the maps package
+// added to the Go stdlib
+// in Go 1.21 (https://go.dev/doc/go1.21#maps).
 package maps
 
 import "github.com/bobg/go-generics/v2/iter"
