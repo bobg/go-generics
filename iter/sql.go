@@ -20,17 +20,40 @@ type QueryerContext interface {
 // The values produced by the iterator will be instances of that struct type,
 // with fields populated by the queried values.
 func SQL[T any](ctx context.Context, db QueryerContext, query string, args ...any) (Of[T], error) {
-	var t T
-	tt := reflect.TypeOf(t)
-	if tt.Kind() != reflect.Struct {
-		return nil, fmt.Errorf("type parameter to SQL has %s kind but must be struct", tt.Kind())
-	}
-	nfields := tt.NumField()
-
 	rows, err := db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("executing query: %w", err)
 	}
+
+	return sqlhelper[T](ctx, rows)
+}
+
+// Prepared is like [SQL] but uses a prepared [sql.Stmt] instead of a database and string query.
+// It is the caller's responsibility to close the statement.
+func Prepared[T any](ctx context.Context, stmt *sql.Stmt, args ...any) (Of[T], error) {
+	rows, err := stmt.QueryContext(ctx, args...)
+	if err != nil {
+		return nil, fmt.Errorf("executing query: %w", err)
+	}
+
+	return sqlhelper[T](ctx, rows)
+}
+
+type sqlKindError struct {
+	kind reflect.Kind
+}
+
+func (e sqlKindError) Error() string {
+	return fmt.Sprintf("type parameter has %s kind but must be struct", e.kind)
+}
+
+func sqlhelper[T any](ctx context.Context, rows *sql.Rows) (Of[T], error) {
+	var t T
+	tt := reflect.TypeOf(t)
+	if tt.Kind() != reflect.Struct {
+		return nil, sqlKindError{kind: tt.Kind()}
+	}
+	nfields := tt.NumField()
 
 	res := Go(func(ch chan<- T) error {
 		defer rows.Close()
@@ -54,8 +77,7 @@ func SQL[T any](ctx context.Context, db QueryerContext, query string, args ...an
 				addr := rowval.Field(i).Addr()
 				ptrs = append(ptrs, addr.Interface())
 			}
-			err = rows.Scan(ptrs...)
-			if err != nil {
+			if err := rows.Scan(ptrs...); err != nil {
 				return fmt.Errorf("scanning row: %w", err)
 			}
 
