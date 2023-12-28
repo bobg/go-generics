@@ -65,16 +65,39 @@ func TestSQL(t *testing.T) {
 		}
 	}
 
-	it, err := SQL[employee](ctx, db, "SELECT name, salary FROM employees ORDER BY name")
-	if err != nil {
-		t.Fatal(err)
-	}
-	got, err := ToSlice(it)
-	if err != nil {
-		t.Fatal(err)
-	}
+	const q = `SELECT name, salary FROM employees ORDER BY name`
 
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("got %v, want %v", got, want)
-	}
+	t.Run("SQL", func(t *testing.T) {
+		it, err := SQL[employee](ctx, db, q)
+		if err != nil {
+			t.Fatal(err)
+		}
+		got, err := ToSlice(it)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %v, want %v", got, want)
+		}
+	})
+
+	t.Run("Prepare", func(t *testing.T) {
+		stmt, err := db.PrepareContext(ctx, q)
+		if err != nil {
+			t.Fatal(err)
+		}
+		it, err := Prepared[employee](ctx, stmt)
+		if err != nil {
+			t.Fatal(err)
+		}
+		got, err := ToSlice(it)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %v, want %v", got, want)
+		}
+	})
 }
