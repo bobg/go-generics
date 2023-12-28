@@ -39,11 +39,19 @@ func Prepared[T any](ctx context.Context, stmt *sql.Stmt, args ...any) (Of[T], e
 	return sqlhelper[T](ctx, rows)
 }
 
+type sqlKindError struct {
+	kind reflect.Kind
+}
+
+func (e sqlKindError) Error() string {
+	return fmt.Sprintf("type parameter has %s kind but must be struct", e.kind)
+}
+
 func sqlhelper[T any](ctx context.Context, rows *sql.Rows) (Of[T], error) {
 	var t T
 	tt := reflect.TypeOf(t)
 	if tt.Kind() != reflect.Struct {
-		return nil, fmt.Errorf("type parameter to SQL has %s kind but must be struct", tt.Kind())
+		return nil, sqlKindError{kind: tt.Kind()}
 	}
 	nfields := tt.NumField()
 

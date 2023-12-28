@@ -3,6 +3,7 @@ package iter
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"os"
 	"reflect"
 	"testing"
@@ -98,6 +99,16 @@ func TestSQL(t *testing.T) {
 
 		if !reflect.DeepEqual(got, want) {
 			t.Errorf("got %v, want %v", got, want)
+		}
+	})
+
+	t.Run("KindError", func(t *testing.T) {
+		_, err := SQL[int](ctx, db, q)
+
+		var e sqlKindError
+		if !errors.As(err, &e) {
+			e.kind = reflect.TypeOf(0).Kind()
+			t.Errorf("got %v, want %v", err, e)
 		}
 	})
 }
