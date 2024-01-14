@@ -4,6 +4,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/bobg/go-generics/v3)](https://goreportcard.com/report/github.com/bobg/go-generics/v3)
 [![Tests](https://github.com/bobg/go-generics/actions/workflows/go.yml/badge.svg)](https://github.com/bobg/go-generics/actions/workflows/go.yml)
 [![Coverage Status](https://coveralls.io/repos/github/bobg/go-generics/badge.svg?branch=master)](https://coveralls.io/github/bobg/go-generics?branch=master)
+[![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)
 
 This is go-generics,
 a collection of typesafe generic utilities

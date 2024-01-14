@@ -24,6 +24,7 @@ func (*goMapIter[K, V]) Err() error {
 }
 
 // FromMap produces an iterator of key-value pairs from a Go map.
+// The resulting iterator never returns an error.
 func FromMap[M ~map[K]V, K comparable, V any](m M) Of[Pair[K, V]] {
 	return &goMapIter[K, V]{
 		m:        m,
