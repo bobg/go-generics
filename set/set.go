@@ -104,6 +104,24 @@ func (s Of[T]) Slice() []T {
 	return maps.Keys(s)
 }
 
+// All implements the range-based iteration proposal at https://github.com/golang/go/issues/61405.
+//
+// Usage:
+//
+//	var s set.Of[Type] = ...
+//
+//	for val := range s.All {
+//	  ... values in an indeterminate order...
+//	}
+func (s Of[T]) All(yield func(T) bool) bool {
+	for val := range s {
+		if !yield(val) {
+			return false
+		}
+	}
+	return true
+}
+
 // Intersect produces a new set containing only items that appear in all the given sets.
 // The input may include nils,
 // representing empty sets
