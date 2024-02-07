@@ -2,6 +2,8 @@ package iter
 
 import (
 	"bufio"
+	"context"
+	"errors"
 	"io"
 )
 
@@ -60,7 +62,7 @@ func Repeat[T any](val T) Of[T] {
 }
 
 // Lines produces an iterator over the lines of text in r.
-// This uses a bufio.Scanner
+// This uses a [bufio.Scanner]
 // and is subject to its default line-length limit
 // (see https://pkg.go.dev/bufio#pkg-constants).
 func Lines(r io.Reader) Of[string] {
@@ -70,5 +72,91 @@ func Lines(r io.Reader) Of[string] {
 			return sc.Text(), true, nil
 		}
 		return "", false, sc.Err()
+	})
+}
+
+// LongLines produces an iterator of readers,
+// each delivering a single line of text from r.
+// Unlike [Lines],
+// this does not use a [bufio.Scanner]
+// and is not subject to its default line-length limit.
+// Each reader must be fully consumed before the next one is available.
+// If not consuming all readers from the iterator,
+// the caller should cancel the context to reclaim resources.
+func LongLines(ctx context.Context, r io.Reader) Of[io.Reader] {
+	br, ok := r.(io.ByteReader)
+	if !ok {
+		br = bufio.NewReader(r)
+	}
+
+	return Go(func(ch chan<- io.Reader) error {
+		var (
+			pr    io.Reader
+			pw    io.WriteCloser
+			sawCR bool
+		)
+
+		// Defer closing only the final value of pw.
+		defer func() {
+			if pw != nil {
+				pw.Close()
+			}
+		}()
+
+		newline := func() error {
+			if pw != nil {
+				if err := pw.Close(); err != nil {
+					return err
+				}
+			}
+
+			pr, pw = io.Pipe()
+
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			case ch <- pr:
+			}
+
+			sawCR = false
+
+			return nil
+		}
+
+		if err := newline(); err != nil {
+			return err
+		}
+
+		for {
+			b, err := br.ReadByte()
+			if errors.Is(err, io.EOF) {
+				return pw.Close()
+			}
+			if err != nil {
+				return err
+			}
+
+			if b == '\n' {
+				if err := newline(); err != nil {
+					return err
+				}
+				continue
+			}
+
+			if sawCR {
+				if _, err := pw.Write([]byte{'\r'}); err != nil {
+					return err
+				}
+				sawCR = false
+			}
+			if b == '\r' {
+				sawCR = true
+				continue
+			}
+
+			if _, err := pw.Write([]byte{b}); err != nil {
+				return err
+			}
+		}
 	})
 }
