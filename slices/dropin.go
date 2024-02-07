@@ -200,3 +200,8 @@ func BinarySearch[S ~[]E, E cmp.Ordered](x S, target E) (int, bool) {
 func BinarySearchFunc[S ~[]E, E, T any](x S, target T, cmp func(E, T) int) (int, bool) {
 	return slices.BinarySearchFunc(x, target, cmp)
 }
+
+// Concat returns a new slice concatenating the passed in slices.
+func Concat[S ~[]E, E any](s ...S) S {
+	return slices.Concat(s...)
+}

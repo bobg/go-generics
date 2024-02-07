@@ -976,3 +976,14 @@ func TestBinarySearchFunc(t *testing.T) {
 		t.Errorf("BinarySearchFunc(%v, %q, cmp) = %v, %v, want %v, %v", data, "2", pos, found, 3, true)
 	}
 }
+
+func TestConcat(t *testing.T) {
+	var (
+		a    = []int{1, 2, 3}
+		b    = []int{4, 5, 6}
+		want = []int{1, 2, 3, 4, 5, 6}
+	)
+	if got := Concat(a, b); !Equal(got, want) {
+		t.Errorf("Concat(%v, %v) = %v, want %v", a, b, got, want)
+	}
+}
