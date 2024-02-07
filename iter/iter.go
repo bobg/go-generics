@@ -1,6 +1,8 @@
 // Package iter defines an iterator interface,
 // a collection of concrete iterator types,
 // and some functions for operating on iterators.
+// It is also a drop-in replacement for the Go 1.23 standard library package iter
+// (a preview of which is available in Go 1.22 when building with GOEXPERIMENT=rangefunc).
 package iter
 
 // Of is the interface implemented by iterators.
@@ -45,6 +47,9 @@ type Seq2[K, V any] func(yield func(K, V) bool)
 
 // All makes a Go 1.23 iterator from an Of[T],
 // suitable for use in a one-variable for-range loop.
+// To try this in Go 1.22,
+// build with the environment variable GOEXPERIMENT set to rangefunc.
+// See https://go.dev/wiki/RangefuncExperiment.
 //
 // The caller should still check the iterator's Err method after the loop terminates.
 func All[T any](inp Of[T]) Seq[T] {
@@ -57,8 +62,11 @@ func All[T any](inp Of[T]) Seq[T] {
 	}
 }
 
-// AllCount makes a counting iterator from an Of[T],
+// AllCount makes a Go 1.23 counting iterator from an Of[T],
 // suitable for use in a two-variable for-range loop.
+// To try this in Go 1.22,
+// build with the environment variable GOEXPERIMENT set to rangefunc.
+// See https://go.dev/wiki/RangefuncExperiment.
 //
 // The caller should still check the iterator's Err method after the loop terminates.
 func AllCount[T any](inp Of[T]) Seq2[int, T] {
@@ -73,8 +81,11 @@ func AllCount[T any](inp Of[T]) Seq2[int, T] {
 	}
 }
 
-// AllPairs makes a pair iterator from an Of[Pair[T, U]],
+// AllPairs makes a Go 1.23 pair iterator from an Of[Pair[T, U]],
 // suitable for use in a two-variable for-range loop.
+// To try this in Go 1.22,
+// build with the environment variable GOEXPERIMENT set to rangefunc.
+// See https://go.dev/wiki/RangefuncExperiment.
 //
 // The caller should still check the iterator's Err method after the loop terminates.
 func AllPairs[T, U any](inp Of[Pair[T, U]]) Seq2[T, U] {
