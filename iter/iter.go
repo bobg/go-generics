@@ -5,6 +5,8 @@
 // (a preview of which is available in Go 1.22 when building with GOEXPERIMENT=rangefunc).
 package iter
 
+import "context"
+
 // Of is the interface implemented by iterators.
 // It is called "Of" so that when qualified with this package name
 // and instantiated with a member type,
@@ -97,4 +99,56 @@ func AllPairs[T, U any](inp Of[Pair[T, U]]) Seq2[T, U] {
 			}
 		}
 	}
+}
+
+// FromSeq converts a Go 1.23 iterator into an Of[T].
+func FromSeq[T any](seq Seq[T]) Of[T] {
+	return Go(func(ch chan<- T) error {
+		seq(func(v T) bool {
+			ch <- v
+			return true
+		})
+		return nil
+	})
+}
+
+// FromSeqContext converts a Go 1.23 iterator into an Of[T].
+func FromSeqContext[T any](ctx context.Context, seq Seq[T]) Of[T] {
+	return Go(func(ch chan<- T) error {
+		seq(func(v T) bool {
+			select {
+			case <-ctx.Done():
+				return false
+			case ch <- v:
+				return true
+			}
+		})
+		return ctx.Err()
+	})
+}
+
+// FromSeq2 converts a Go 1.23 pair iterator into an Of[Pair[T, U]].
+func FromSeq2[T, U any](seq Seq2[T, U]) Of[Pair[T, U]] {
+	return Go(func(ch chan<- Pair[T, U]) error {
+		seq(func(t T, u U) bool {
+			ch <- Pair[T, U]{X: t, Y: u}
+			return true
+		})
+		return nil
+	})
+}
+
+// FromSeq2Context converts a Go 1.23 pair iterator into an Of[Pair[T, U]].
+func FromSeq2Context[T, U any](ctx context.Context, seq Seq2[T, U]) Of[Pair[T, U]] {
+	return Go(func(ch chan<- Pair[T, U]) error {
+		seq(func(t T, u U) bool {
+			select {
+			case <-ctx.Done():
+				return false
+			case ch <- Pair[T, U]{X: t, Y: u}:
+				return true
+			}
+		})
+		return ctx.Err()
+	})
 }

@@ -63,3 +63,22 @@ func testSeq2[T, U any](t *testing.T, seq Seq2[T, U], wantT []T, wantU []U) {
 		t.Errorf("got %v, want %v", gotU, wantU)
 	}
 }
+
+func TestFromSeq(t *testing.T) {
+	seq := func(yield func(int) bool) {
+		for i := 0; i < 5; i++ {
+			if !yield(i) {
+				break
+			}
+		}
+	}
+	it := FromSeq(seq)
+	got, err := ToSlice(it)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []int{0, 1, 2, 3, 4}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v, want %v", got, want)
+	}
+}
