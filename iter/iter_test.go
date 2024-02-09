@@ -1,6 +1,8 @@
 package iter
 
 import (
+	"context"
+	"errors"
 	"reflect"
 	"testing"
 )
@@ -100,5 +102,38 @@ func TestFromSeq2(t *testing.T) {
 	want := []Pair[int, string]{{0, "Alice"}, {1, "Bob"}, {2, "Carol"}}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got %v, want %v", got, want)
+	}
+}
+
+func TestFromSeqContext(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	seq := func(yield func(int) bool) {
+		for i := 0; i < 5; i++ {
+			if !yield(i) {
+				break
+			}
+		}
+	}
+
+	it := FromSeqContext(ctx, seq)
+
+	if !it.Next() {
+		t.Fatal("it.Next() returned false, want true")
+	}
+	val0 := it.Val()
+	if val0 != 0 {
+		t.Errorf("got %v, want 0", val0)
+	}
+
+	cancel()
+
+	got, err := ToSlice(it)
+	if !errors.Is(err, context.Canceled) {
+		t.Errorf("got %v, want %v", err, context.Canceled)
+	}
+	if len(got) > 0 {
+		t.Errorf("got %v, want []", got)
 	}
 }
