@@ -82,3 +82,23 @@ func TestFromSeq(t *testing.T) {
 		t.Errorf("got %v, want %v", got, want)
 	}
 }
+
+func TestFromSeq2(t *testing.T) {
+	names := []string{"Alice", "Bob", "Carol"}
+	seq2 := func(yield func(int, string) bool) {
+		for i, name := range names {
+			if !yield(i, name) {
+				break
+			}
+		}
+	}
+	it := FromSeq2(seq2)
+	got, err := ToSlice(it)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []Pair[int, string]{{0, "Alice"}, {1, "Bob"}, {2, "Carol"}}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v, want %v", got, want)
+	}
+}
