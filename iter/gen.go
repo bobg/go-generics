@@ -1,10 +1,5 @@
 package iter
 
-import (
-	"bufio"
-	"io"
-)
-
 // Gen produces an iterator of values obtained by repeatedly calling f.
 // If f returns an error,
 // iteration stops and the error is available via the iterator's Err method.
@@ -57,18 +52,4 @@ func Ints(start, delta int) Of[int] {
 // Repeat produces an infinite iterator repeatedly containing the given value.
 func Repeat[T any](val T) Of[T] {
 	return Gen(func() (T, bool, error) { return val, true, nil })
-}
-
-// Lines produces an iterator over the lines of text in r.
-// This uses a bufio.Scanner
-// and is subject to its default line-length limit
-// (see https://pkg.go.dev/bufio#pkg-constants).
-func Lines(r io.Reader) Of[string] {
-	sc := bufio.NewScanner(r)
-	return Gen(func() (string, bool, error) {
-		if sc.Scan() {
-			return sc.Text(), true, nil
-		}
-		return "", false, sc.Err()
-	})
 }
