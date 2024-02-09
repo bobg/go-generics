@@ -137,3 +137,37 @@ func TestFromSeqContext(t *testing.T) {
 		t.Errorf("got %v, want []", got)
 	}
 }
+
+func TestFromSeq2Context(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	names := []string{"Alice", "Bob", "Carol"}
+	seq2 := func(yield func(int, string) bool) {
+		for i, name := range names {
+			if !yield(i, name) {
+				break
+			}
+		}
+	}
+
+	it := FromSeq2Context(ctx, seq2)
+
+	if !it.Next() {
+		t.Fatal("it.Next() returned false, want true")
+	}
+	val0 := it.Val()
+	if val0.X != 0 || val0.Y != "Alice" {
+		t.Errorf("got %v, want {0, Alice}", val0)
+	}
+
+	cancel()
+
+	got, err := ToSlice(it)
+	if !errors.Is(err, context.Canceled) {
+		t.Errorf("got %v, want %v", err, context.Canceled)
+	}
+	if len(got) > 0 {
+		t.Errorf("got %v, want []", got)
+	}
+}
