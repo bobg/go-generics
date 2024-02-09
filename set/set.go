@@ -67,6 +67,10 @@ func (s Of[T]) Equal(other Of[T]) bool {
 	return true
 }
 
+// Each calls a function on each element of the set in an indeterminate order.
+// It is safe to add and remove items during a call to Each,
+// but that can affect the sequence of values seen later during the same Each call.
+// The set may be nil.
 func (s Of[T]) Each(f func(T)) {
 	_ = s.Eachx(func(val T) error {
 		f(val)
@@ -78,6 +82,8 @@ func (s Of[T]) Each(f func(T)) {
 // It is safe to add and remove items during a call to Each,
 // but that can affect the sequence of values seen later during the same Eachx call.
 // The set may be nil.
+// If the function returns an error,
+// Eachx stops and returns that error.
 func (s Of[T]) Eachx(f func(T) error) error {
 	for val := range s {
 		err := f(val)
