@@ -386,3 +386,21 @@ func (k keyedSorter[S, T]) Swap(i, j int) {
 	k.keys.Swap(i, j)
 	k.slice[i], k.slice[j] = k.slice[j], k.slice[i]
 }
+
+// NonNil converts a nil slice to a non-nil empty slice.
+// It returns other slices unchanged.
+//
+// A nil slice is usually preferable,
+// since it is equivalent to an empty slice in almost every way
+// and does not have the overhead of an allocation.
+// (See https://dave.cheney.net/2018/07/12/slices-from-the-ground-up.)
+// However, there are some corner cases where the difference matters,
+// notably when marshaling to JSON,
+// where an empty slice marshals as the array []
+// but a nil slice marshals as the non-array `null`.
+func NonNil[S ~[]T, T any](s S) S {
+	if s == nil {
+		return S{}
+	}
+	return s
+}
