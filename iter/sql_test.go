@@ -68,6 +68,21 @@ func TestSQL(t *testing.T) {
 
 	const q = `SELECT name, salary FROM employees ORDER BY name`
 
+	t.Run("Scalar", func(t *testing.T) {
+		it, err := SQL[string](ctx, db, `SELECT name FROM employees ORDER BY name DESC`)
+		if err != nil {
+			t.Fatal(err)
+		}
+		got, err := ToSlice(it)
+		if err != nil {
+			t.Fatal(err)
+		}
+		want := []string{"dave", "carol", "bill", "alice"}
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %v, want %v", got, want)
+		}
+	})
+
 	t.Run("SQL", func(t *testing.T) {
 		it, err := SQL[employee](ctx, db, q)
 		if err != nil {
@@ -103,7 +118,7 @@ func TestSQL(t *testing.T) {
 	})
 
 	t.Run("KindError", func(t *testing.T) {
-		_, err := SQL[int](ctx, db, q)
+		_, err := SQL[*int](ctx, db, q)
 
 		var e sqlKindError
 		if !errors.As(err, &e) {
