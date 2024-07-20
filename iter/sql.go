@@ -60,7 +60,7 @@ func sqlhelper[T any](ctx context.Context, rows *sql.Rows) (Of[T], error) {
 		return sqlhelperStruct[T](ctx, tt, rows), nil
 
 	case reflect.Bool, reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Float32, reflect.Float64, reflect.String:
-		return sqlhelperScalar[T](ctx, tt, rows), nil
+		return sqlhelperScalar[T](ctx, rows), nil
 
 	default:
 		return nil, sqlKindError{kind: tt.Kind()}
@@ -105,7 +105,7 @@ func sqlhelperStruct[T any](ctx context.Context, tt reflect.Type, rows *sql.Rows
 	})
 }
 
-func sqlhelperScalar[T any](ctx context.Context, tt reflect.Type, rows *sql.Rows) Of[T] {
+func sqlhelperScalar[T any](ctx context.Context, rows *sql.Rows) Of[T] {
 	return Go(func(ch chan<- T) error {
 		defer rows.Close()
 
