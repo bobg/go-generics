@@ -6,6 +6,7 @@ import (
 	"errors"
 	"os"
 	"reflect"
+	"slices"
 	"testing"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -73,12 +74,12 @@ func TestSQL(t *testing.T) {
 		if *errptr != nil {
 			t.Fatal(*errptr)
 		}
-		got := ToSlice(it)
+		got := slices.Collect(it)
 		if *errptr != nil {
 			t.Fatal(*errptr)
 		}
 		want := []string{"dave", "carol", "bill", "alice"}
-		if !reflect.DeepEqual(got, want) {
+		if !slices.Equal(got, want) {
 			t.Errorf("got %v, want %v", got, want)
 		}
 	})
@@ -88,12 +89,12 @@ func TestSQL(t *testing.T) {
 		if *errptr != nil {
 			t.Fatal(*errptr)
 		}
-		got := ToSlice(it)
+		got := slices.Collect(it)
 		if *errptr != nil {
 			t.Fatal(*errptr)
 		}
 
-		if !reflect.DeepEqual(got, want) {
+		if !slices.Equal(got, want) {
 			t.Errorf("got %v, want %v", got, want)
 		}
 	})
@@ -107,19 +108,19 @@ func TestSQL(t *testing.T) {
 		if *errptr != nil {
 			t.Fatal(*errptr)
 		}
-		got := ToSlice(it)
+		got := slices.Collect(it)
 		if *errptr != nil {
 			t.Fatal(*errptr)
 		}
 
-		if !reflect.DeepEqual(got, want) {
+		if !slices.Equal(got, want) {
 			t.Errorf("got %v, want %v", got, want)
 		}
 	})
 
 	t.Run("KindError", func(t *testing.T) {
 		it, errptr := SQL[*int](ctx, db, q)
-		_ = ToSlice(it)
+		_ = slices.Collect(it)
 
 		var e sqlKindError
 		if !errors.As(*errptr, &e) {

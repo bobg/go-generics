@@ -12,7 +12,7 @@ import "iter"
 // and
 //
 //	out[i+1] == f(out[i], inp[i+1])
-func Accum[F ~func(T, T) T, T any](inp iter.Seq[T], f F) iter.Seq[T] {
+func Accum[T any, F ~func(T, T) T](inp iter.Seq[T], f F) iter.Seq[T] {
 	res, _ := Accumx(inp, func(a, b T) (T, error) {
 		return f(a, b), nil
 	})
@@ -30,7 +30,7 @@ func Accum[F ~func(T, T) T, T any](inp iter.Seq[T], f F) iter.Seq[T] {
 // and
 //
 //	out[i+1] == f(out[i], inp[i+1])
-func Accumx[F ~func(T, T) (T, error), T any](inp iter.Seq[T], f F) (iter.Seq[T], *error) {
+func Accumx[T any, F ~func(T, T) (T, error)](inp iter.Seq[T], f F) (iter.Seq[T], *error) {
 	var (
 		val T
 		err error

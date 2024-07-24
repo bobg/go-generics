@@ -7,7 +7,7 @@ import "iter"
 // iteration stops and the error is available via the iterator's Err method.
 // Otherwise, each call to f should return a value and a true boolean.
 // When f returns a false boolean, it signals the normal end of iteration.
-func Gen[F ~func() (T, bool, error), T any](f F) (iter.Seq[T], *error) {
+func Gen[T any, F ~func() (T, bool, error)](f F) (iter.Seq[T], *error) {
 	var err error
 
 	g := func(yield func(T) bool) {

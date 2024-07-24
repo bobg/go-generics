@@ -2,6 +2,7 @@ package seqs_test
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/bobg/go-generics/v4/seqs"
 )
@@ -30,8 +31,8 @@ func ExampleDup() {
 		dups       = seqs.Dup(first10, 2)  // Two copies of the first10 iterator
 		evens      = seqs.Filter(dups[0], func(val int) bool { return val%2 == 0 })
 		odds       = seqs.Filter(dups[1], func(val int) bool { return val%2 == 1 })
-		evensSlice = seqs.ToSlice(evens)
-		oddsSlice  = seqs.ToSlice(odds)
+		evensSlice = slices.Collect(evens)
+		oddsSlice  = slices.Collect(odds)
 	)
 	fmt.Println(evensSlice)
 	fmt.Println(oddsSlice)
@@ -47,7 +48,7 @@ func ExampleGo() {
 		ch <- 3
 		return nil
 	})
-	slice := seqs.ToSlice(it)
+	slice := slices.Collect(it)
 	if *errptr != nil {
 		panic(*errptr)
 	}
@@ -58,8 +59,8 @@ func ExampleGo() {
 
 func ExampleZip() {
 	var (
-		letters = seqs.FromSlice([]string{"a", "b", "c", "d"})
-		nums    = seqs.FromSlice([]int{1, 2, 3})
+		letters = slices.Values([]string{"a", "b", "c", "d"})
+		nums    = slices.Values([]int{1, 2, 3})
 		pairs   = seqs.Zip(letters, nums)
 	)
 	for x, y := range pairs {

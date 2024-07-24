@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"iter"
-	"reflect"
+	"slices"
 	"testing"
 )
 
@@ -31,10 +31,15 @@ func TestFromChan(t *testing.T) {
 		}
 		close(ch)
 	}()
-	it := FromChan(ch)
-	ints := ToSlice(it)
-	if !reflect.DeepEqual(ints, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}) {
-		t.Errorf("got %v, want 1 through 10", ints)
+
+	var (
+		it   = FromChan(ch)
+		ints = slices.Collect(it)
+		want = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	)
+
+	if !slices.Equal(ints, want) {
+		t.Errorf("got %v, want %v", ints, want)
 	}
 }
 

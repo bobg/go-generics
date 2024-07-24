@@ -47,7 +47,7 @@ func TestSeq2(t *testing.T) {
 	}
 }
 
-func TestChanSeq(t *testing.T) {
+func TestChan(t *testing.T) {
 	ch := make(chan int)
 	go func() {
 		for i := 0; i < 3; i++ {
@@ -57,7 +57,7 @@ func TestChanSeq(t *testing.T) {
 	}()
 
 	var (
-		seq  = ChanSeq(ch)
+		seq  = Chan(ch)
 		got  = slices.Collect(seq)
 		want = []int{0, 1, 2}
 	)
@@ -66,9 +66,9 @@ func TestChanSeq(t *testing.T) {
 	}
 }
 
-func TestStringSeq(t *testing.T) {
+func TestString(t *testing.T) {
 	var (
-		seq  = StringSeq("abc")
+		seq  = String("abc")
 		s1   = Seq1(seq)
 		got  = slices.Collect(s1)
 		want = []Pair[int, rune]{{X: 0, Y: 'a'}, {X: 1, Y: 'b'}, {X: 2, Y: 'c'}}

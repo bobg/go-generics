@@ -1,17 +1,19 @@
 package seqs
 
 import (
-	"reflect"
+	"slices"
 	"testing"
 )
 
 func TestConcat(t *testing.T) {
-	c := Concat(
-		FromSlice([]int{1, 2, 3}),
-		FromSlice([]int{4, 5, 6}),
+	var (
+		a    = slices.Values([]int{1, 2, 3})
+		b    = slices.Values([]int{4, 5, 6})
+		c    = Concat(a, b)
+		got  = slices.Collect(c)
+		want = []int{1, 2, 3, 4, 5, 6}
 	)
-	got := ToSlice(c)
-	if !reflect.DeepEqual(got, []int{1, 2, 3, 4, 5, 6}) {
-		t.Errorf("got %v, want [1 2 3 4 5 6]", got)
+	if !slices.Equal(got, want) {
+		t.Errorf("got %v, want %v", got, want)
 	}
 }

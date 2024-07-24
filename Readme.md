@@ -1,14 +1,14 @@
 # Go-generics - Generic slice, map, set, iterator, and goroutine utilities for Go
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/bobg/go-generics/v3.svg)](https://pkg.go.dev/github.com/bobg/go-generics/v3)
-[![Go Report Card](https://goreportcard.com/badge/github.com/bobg/go-generics/v3)](https://goreportcard.com/report/github.com/bobg/go-generics/v3)
+[![Go Reference](https://pkg.go.dev/badge/github.com/bobg/go-generics/v4.svg)](https://pkg.go.dev/github.com/bobg/go-generics/v4)
+[![Go Report Card](https://goreportcard.com/badge/github.com/bobg/go-generics/v4)](https://goreportcard.com/report/github.com/bobg/go-generics/v4)
 [![Tests](https://github.com/bobg/go-generics/actions/workflows/go.yml/badge.svg)](https://github.com/bobg/go-generics/actions/workflows/go.yml)
 [![Coverage Status](https://coveralls.io/repos/github/bobg/go-generics/badge.svg?branch=master)](https://coveralls.io/github/bobg/go-generics?branch=master)
 [![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)
 
 This is go-generics,
 a collection of typesafe generic utilities
-for slices, maps, sets, iterators, and goroutine patterns in Go.
+for slices, sets, iterators, and goroutine patterns in Go.
 
 # Slices
 
@@ -32,17 +32,6 @@ this version of `slices`
 allows the index value passed to `Insert`, `Delete`, and `Replace`
 to be negative for counting backward from the end of the slice.
 
-# Maps
-
-The `maps` package has a few convenience functions
-for duplicating, inverting, constructing, and iterating over maps,
-as well as for testing their equality.
-
-The `maps` package is a drop-in replacement
-for the `maps` package
-added to the Go stdlib
-in [Go 1.21](https://go.dev/doc/go1.21#maps).
-
 # Set
 
 The `set` package implements the usual collection of functions for sets:
@@ -51,14 +40,15 @@ as well as member functions for adding and removing items,
 checking for the presence of items,
 and iterating over items.
 
-# Iter
+# Seqs
 
-The `iter` package implements efficient, typesafe iterators
-that can convert to and from Go slices, maps, and channels,
-and produce iterators over the values from function calls and goroutines.
-There is also an iterator over the results of a SQL query;
-the usual collection of functions on iterators
-(`Filter`, `Map`, `Concat`, `Accum`, etc.).
+The `seqs` package provides ways to create and work with Go 1.23 “range-over-func” iterators.
+It includes the usual collection of functions on iterators
+(`Filter`, `Map`, `Concat`, `Accum`, etc.),
+plus adapters for getting iterators over channels and strings,
+iterating over the results of a SQL query,
+iterating over lines of text,
+and more.
 
 # Parallel
 

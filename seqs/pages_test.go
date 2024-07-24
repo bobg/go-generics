@@ -2,6 +2,7 @@ package seqs
 
 import (
 	"reflect"
+	"slices"
 	"testing"
 )
 
@@ -10,7 +11,7 @@ func TestPage(t *testing.T) {
 		ints    = Ints(1, 1)
 		first10 = FirstN(ints, 10)
 		pages   = Pages(first10, 3)
-		got     = ToSlice(pages)
+		got     = slices.Collect(pages)
 		want    = [][]int{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}, {10}}
 	)
 	if !reflect.DeepEqual(got, want) {

@@ -1,8 +1,6 @@
 package parallel
 
-import (
-	"sync"
-)
+import "sync"
 
 // Protect offers safe concurrent access to a protected value.
 // It is a "share memory by communicating" alternative

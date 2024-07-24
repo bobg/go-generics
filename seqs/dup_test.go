@@ -1,19 +1,22 @@
 package seqs
 
 import (
-	"reflect"
+	"slices"
 	"testing"
 )
 
 func TestDup(t *testing.T) {
-	inp := FromSlice([]int{1, 2, 3})
-	dups := Dup(inp, 2)
-	s1 := ToSlice(dups[0])
-	if !reflect.DeepEqual(s1, []int{1, 2, 3}) {
-		t.Errorf("got %v, want [1 2 3]", s1)
+	var (
+		slice = []int{1, 2, 3}
+		it    = slices.Values(slice)
+		dups  = Dup(it, 2)
+		s1    = slices.Collect(dups[0])
+	)
+	if !slices.Equal(s1, slice) {
+		t.Errorf("got %v, want %v", s1, slice)
 	}
-	s2 := ToSlice(dups[1])
-	if !reflect.DeepEqual(s2, []int{1, 2, 3}) {
-		t.Errorf("got %v, want [1 2 3]", s2)
+	s2 := slices.Collect(dups[1])
+	if !slices.Equal(s2, slice) {
+		t.Errorf("got %v, want %v", s2, slice)
 	}
 }
