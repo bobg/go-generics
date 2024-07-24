@@ -20,7 +20,7 @@ import (
 	"slices"
 	"sort"
 
-	"github.com/bobg/go-generics/v3/internal"
+	"github.com/bobg/go-generics/v4/internal"
 )
 
 // Get gets the idx'th element of s.

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/bobg/go-generics/v3/parallel"
+	"github.com/bobg/go-generics/v4/parallel"
 )
 
 func ExampleConsumers() {
@@ -39,16 +39,16 @@ func ExampleProducers() {
 	ctx := context.Background()
 
 	// Five goroutines each produce their worker number and then exit.
-	it := parallel.Producers(ctx, 5, func(_ context.Context, n int, send func(int) error) error {
+	it, errptr := parallel.Producers(ctx, 5, func(_ context.Context, n int, send func(int) error) error {
 		return send(n)
 	})
 
 	// Caller consumes the produced values.
-	for it.Next() {
-		fmt.Println(it.Val())
+	for val := range it {
+		fmt.Println(val)
 	}
-	if err := it.Err(); err != nil {
-		panic(err)
+	if *errptr != nil {
+		panic(*errptr)
 	}
 	// Unordered output:
 	// 0

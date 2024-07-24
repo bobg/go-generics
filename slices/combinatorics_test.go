@@ -3,9 +3,8 @@ package slices
 import (
 	"fmt"
 	"reflect"
+	"slices"
 	"testing"
-
-	"github.com/bobg/go-generics/v3/iter"
 )
 
 func TestPermutations(t *testing.T) {
@@ -29,10 +28,7 @@ func TestPermutations(t *testing.T) {
 	for i, tc := range cases {
 		t.Run(fmt.Sprintf("case_%02d", i+1), func(t *testing.T) {
 			it := Permutations(tc.inp)
-			got, err := iter.ToSlice(it)
-			if err != nil {
-				t.Fatal(err)
-			}
+			got := slices.Collect(it)
 			if !reflect.DeepEqual(got, tc.want) {
 				t.Errorf("got %v, want %v", got, tc.want)
 			}
@@ -78,10 +74,7 @@ func TestCombinations(t *testing.T) {
 	for i, tc := range cases {
 		t.Run(fmt.Sprintf("case_%02d", i+1), func(t *testing.T) {
 			it := Combinations(tc.inp, tc.n)
-			got, err := iter.ToSlice(it)
-			if err != nil {
-				t.Fatal(err)
-			}
+			got := slices.Collect(it)
 			if !reflect.DeepEqual(got, tc.want) {
 				t.Errorf("got %v, want %v", got, tc.want)
 			}
@@ -127,10 +120,7 @@ func TestCombinationsWithReplacement(t *testing.T) {
 	for i, tc := range cases {
 		t.Run(fmt.Sprintf("case_%02d", i+1), func(t *testing.T) {
 			it := CombinationsWithReplacement(tc.inp, tc.n)
-			got, err := iter.ToSlice(it)
-			if err != nil {
-				t.Fatal(err)
-			}
+			got := slices.Collect(it)
 			if !reflect.DeepEqual(got, tc.want) {
 				t.Errorf("got %v, want %v", got, tc.want)
 			}

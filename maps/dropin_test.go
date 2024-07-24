@@ -8,11 +8,10 @@ package maps
 
 import (
 	"math"
+	"slices"
 	"sort"
 	"strconv"
 	"testing"
-
-	"github.com/bobg/go-generics/v3/slices"
 )
 
 var m1 = map[int]int{1: 2, 2: 4, 4: 8, 8: 16}
@@ -21,13 +20,13 @@ var m2 = map[int]string{1: "2", 2: "4", 4: "8", 8: "16"}
 func TestKeys(t *testing.T) {
 	want := []int{1, 2, 4, 8}
 
-	got1 := Keys(m1)
+	got1 := slices.Collect(Keys(m1))
 	sort.Ints(got1)
 	if !slices.Equal(got1, want) {
 		t.Errorf("Keys(%v) = %v, want %v", m1, got1, want)
 	}
 
-	got2 := Keys(m2)
+	got2 := slices.Collect(Keys(m2))
 	sort.Ints(got2)
 	if !slices.Equal(got2, want) {
 		t.Errorf("Keys(%v) = %v, want %v", m2, got2, want)
@@ -35,14 +34,14 @@ func TestKeys(t *testing.T) {
 }
 
 func TestValues(t *testing.T) {
-	got1 := Values(m1)
+	got1 := slices.Collect(Values(m1))
 	want1 := []int{2, 4, 8, 16}
 	sort.Ints(got1)
 	if !slices.Equal(got1, want1) {
 		t.Errorf("Values(%v) = %v, want %v", m1, got1, want1)
 	}
 
-	got2 := Values(m2)
+	got2 := slices.Collect(Values(m2))
 	want2 := []string{"16", "2", "4", "8"}
 	sort.Strings(got2)
 	if !slices.Equal(got2, want2) {

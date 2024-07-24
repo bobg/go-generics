@@ -6,7 +6,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/bobg/go-generics/v3/set"
+	"github.com/bobg/go-generics/v4/set"
 )
 
 func TestValues(t *testing.T) {
@@ -25,7 +25,7 @@ func TestValues(t *testing.T) {
 }
 
 func TestProducers(t *testing.T) {
-	it := Producers(context.Background(), 10, func(_ context.Context, n int, send func(int) error) error {
+	it, errptr := Producers(context.Background(), 10, func(_ context.Context, n int, send func(int) error) error {
 		for i := 0; i < 10; i++ {
 			err := send(10*n + i)
 			if err != nil {
@@ -35,11 +35,11 @@ func TestProducers(t *testing.T) {
 		return nil
 	})
 	got := set.New[int]()
-	for it.Next() {
-		got.Add(it.Val())
+	for val := range it {
+		got.Add(val)
 	}
-	if err := it.Err(); err != nil {
-		t.Fatal(err)
+	if *errptr != nil {
+		t.Fatal(*errptr)
 	}
 	if got.Len() != 100 {
 		t.Errorf("got %d values, want 100", got.Len())
