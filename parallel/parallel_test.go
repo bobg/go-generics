@@ -113,7 +113,6 @@ func TestPool(t *testing.T) {
 		wg    sync.WaitGroup
 	)
 	for i := 0; i < 100; i++ {
-		i := i // Go loop var pitfall
 		wg.Add(1)
 		go func() {
 			got, err := call(i)

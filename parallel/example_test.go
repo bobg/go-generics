@@ -83,7 +83,6 @@ func ExamplePool() {
 
 	// Ten goroutines requesting work from those three workers.
 	for i := 1; i <= 10; i++ {
-		i := i // Go loop-var pitfall
 		wg.Add(1)
 		go func() {
 			neg, err := pool(i)
