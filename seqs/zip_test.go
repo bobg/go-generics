@@ -12,8 +12,9 @@ func TestZip(t *testing.T) {
 		z    = Zip(inp1, inp2)
 		z1   = Seq1(z)
 		got  = ToSlice(z1)
+		want = []Pair[int, string]{{X: 1, Y: "a"}, {X: 2, Y: "b"}, {X: 3, Y: "c"}, {Y: "d"}}
 	)
-	if !reflect.DeepEqual(got, []Pair[int, string]{{X: 1, Y: "a"}, {X: 2, Y: "b"}, {X: 3, Y: "c"}, {Y: "d"}}) {
-		t.Errorf("got %v, want [[1 a] [2 b] [3 c] [0 d]]", got)
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v, want %v", got, want)
 	}
 }

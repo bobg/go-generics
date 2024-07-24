@@ -69,11 +69,14 @@ func TestSQL(t *testing.T) {
 	const q = `SELECT name, salary FROM employees ORDER BY name`
 
 	t.Run("Scalar", func(t *testing.T) {
-		it, err := SQL[string](ctx, db, `SELECT name FROM employees ORDER BY name DESC`)
-		if err != nil {
-			t.Fatal(err)
+		it, errptr := SQL[string](ctx, db, `SELECT name FROM employees ORDER BY name DESC`)
+		if *errptr != nil {
+			t.Fatal(*errptr)
 		}
 		got := ToSlice(it)
+		if *errptr != nil {
+			t.Fatal(*errptr)
+		}
 		want := []string{"dave", "carol", "bill", "alice"}
 		if !reflect.DeepEqual(got, want) {
 			t.Errorf("got %v, want %v", got, want)
@@ -81,11 +84,14 @@ func TestSQL(t *testing.T) {
 	})
 
 	t.Run("SQL", func(t *testing.T) {
-		it, err := SQL[employee](ctx, db, q)
-		if err != nil {
-			t.Fatal(err)
+		it, errptr := SQL[employee](ctx, db, q)
+		if *errptr != nil {
+			t.Fatal(*errptr)
 		}
 		got := ToSlice(it)
+		if *errptr != nil {
+			t.Fatal(*errptr)
+		}
 
 		if !reflect.DeepEqual(got, want) {
 			t.Errorf("got %v, want %v", got, want)
@@ -112,7 +118,8 @@ func TestSQL(t *testing.T) {
 	})
 
 	t.Run("KindError", func(t *testing.T) {
-		_, errptr := SQL[*int](ctx, db, q)
+		it, errptr := SQL[*int](ctx, db, q)
+		_ = ToSlice(it)
 
 		var e sqlKindError
 		if !errors.As(*errptr, &e) {

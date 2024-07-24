@@ -13,7 +13,7 @@ func Zip[T, U any](t iter.Seq[T], u iter.Seq[U]) iter.Seq2[T, U] {
 		unext, ustop := iter.Pull(u)
 		defer ustop()
 
-		var tdone, udone bool
+		tOK, uOK := true, true
 
 		for {
 			var (
@@ -21,13 +21,13 @@ func Zip[T, U any](t iter.Seq[T], u iter.Seq[U]) iter.Seq2[T, U] {
 				uval U
 			)
 
-			if !tdone {
-				tval, tdone = tnext()
+			if tOK {
+				tval, tOK = tnext()
 			}
-			if !udone {
-				uval, udone = unext()
+			if uOK {
+				uval, uOK = unext()
 			}
-			if tdone && udone {
+			if !tOK && !uOK {
 				return
 			}
 

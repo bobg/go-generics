@@ -3,7 +3,6 @@ package seqs
 import (
 	"bufio"
 	"errors"
-	"fmt"
 	"io"
 	"iter"
 )
@@ -42,9 +41,7 @@ func LongLines(r io.Reader) (iter.Seq[io.Reader], *error) {
 		br = bufio.NewReader(r)
 	}
 
-	var err error
-
-	f := func(yield func(io.Reader) bool) {
+	return Go(func(ch chan<- io.Reader) error {
 		var (
 			pr    io.Reader
 			pw    io.WriteCloser
@@ -58,25 +55,15 @@ func LongLines(r io.Reader) (iter.Seq[io.Reader], *error) {
 			}
 		}()
 
-		newpipe := func() (bool, error) {
+		newpipe := func() {
 			pr, pw = io.Pipe()
-
-			fmt.Printf("xxx calling yield\n")
-			if !yield(pr) {
-				fmt.Printf("xxx yield returned false\n")
-				return false, nil
-			}
-			fmt.Printf("xxx yield returned true\n")
-			return true, nil
+			ch <- pr
 		}
 
 		newline := func() error {
 			if pw == nil {
-				if ok, err := newpipe(); err != nil || !ok {
-					return err
-				}
+				newpipe()
 			}
-
 			if err := pw.Close(); err != nil {
 				return err
 			}
@@ -89,44 +76,37 @@ func LongLines(r io.Reader) (iter.Seq[io.Reader], *error) {
 
 		write := func(b byte) error {
 			if pw == nil {
-				if ok, err := newpipe(); err != nil || !ok {
-					return err
-				}
+				newpipe()
 			}
 			_, err := pw.Write([]byte{b})
 			return err
 		}
 
-		var ok bool
-		if ok, err = newpipe(); err != nil || !ok {
-			return
-		}
+		newpipe()
 
 		for {
-			var b byte
-
-			b, err = br.ReadByte()
+			b, err := br.ReadByte()
 			if errors.Is(err, io.EOF) {
 				err = nil
 				if pw != nil {
 					err = pw.Close()
 				}
-				return
+				return err
 			}
 			if err != nil {
-				return
+				return err
 			}
 
 			if b == '\n' {
-				if err = newline(); err != nil {
-					return
+				if err := newline(); err != nil {
+					return err
 				}
 				continue
 			}
 
 			if sawCR {
-				if err = write('\r'); err != nil {
-					return
+				if err := write('\r'); err != nil {
+					return err
 				}
 				sawCR = false
 			}
@@ -135,11 +115,9 @@ func LongLines(r io.Reader) (iter.Seq[io.Reader], *error) {
 				continue
 			}
 
-			if err = write(b); err != nil {
-				return
+			if err := write(b); err != nil {
+				return err
 			}
 		}
-	}
-
-	return f, &err
+	})
 }
