@@ -4,11 +4,10 @@ package parallel
 import (
 	"context"
 	"fmt"
+	"iter"
 	"sync"
 
 	"golang.org/x/sync/errgroup"
-
-	"github.com/bobg/go-generics/v3/iter"
 )
 
 // Error is an error type for wrapping errors returned from worker goroutines.
@@ -69,7 +68,7 @@ func Values[F ~func(context.Context, int) (T, error), T any](ctx context.Context
 // An error from any worker cancels them all.
 //
 // The caller gets an iterator over the values produced.
-func Producers[F ~func(context.Context, int, func(T) error) error, T any](ctx context.Context, n int, f F) iter.Of[T] {
+func Producers[F ~func(context.Context, int, func(T) error) error, T any](ctx context.Context, n int, f F) iter.Seq[T] {
 	ch := make(chan T)
 	g, innerCtx := errgroup.WithContext(ctx)
 
