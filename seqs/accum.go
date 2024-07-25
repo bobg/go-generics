@@ -30,6 +30,10 @@ func Accum[T any, F ~func(T, T) T](inp iter.Seq[T], f F) iter.Seq[T] {
 // and
 //
 //	out[i+1] == f(out[i], inp[i+1])
+//
+// The caller gets the resulting iterator and a non-nil pointer to an error.
+// After the iterator is fully consumed,
+// the caller may dereference the error pointer to check for any error that occurred during iteration.
 func Accumx[T any, F ~func(T, T) (T, error)](inp iter.Seq[T], f F) (iter.Seq[T], *error) {
 	var (
 		val T

@@ -1,6 +1,14 @@
 package seqs
 
-import "iter"
+import (
+	"iter"
+	"slices"
+)
+
+// From creates an iterator over the given items.
+func From[T any](items ...T) iter.Seq[T] {
+	return slices.Values(items)
+}
 
 // Pair is a simple, generic pair of values.
 type Pair[T, U any] struct {
@@ -37,17 +45,6 @@ func Seq2[T, U any](inp iter.Seq[Pair[T, U]]) iter.Seq2[T, U] {
 	return func(yield func(T, U) bool) {
 		for val := range inp {
 			if !yield(val.X, val.Y) {
-				return
-			}
-		}
-	}
-}
-
-// Chan produces an [iter.Seq] over the contents of a channel.
-func Chan[T any](inp <-chan T) iter.Seq[T] {
-	return func(yield func(T) bool) {
-		for x := range inp {
-			if !yield(x) {
 				return
 			}
 		}

@@ -5,33 +5,40 @@ import (
 	"iter"
 )
 
-func FromChan[T any](ch <-chan T) iter.Seq[T] {
+// Chan produces an [iter.Seq] over the contents of a channel.
+func Chan[T any](inp <-chan T) iter.Seq[T] {
 	return func(yield func(T) bool) {
-		for val := range ch {
-			if !yield(val) {
-				break
+		for x := range inp {
+			if !yield(x) {
+				return
 			}
 		}
 	}
 }
 
-func FromChanContext[T any](ctx context.Context, ch <-chan T) (iter.Seq[T], *error) {
+// ChanContext produces an [iter.Seq] over the contents of a channel.
+// It stops at the end of the channel or when the given context is canceled.
+//
+// The caller can dereference the returned error pointer to check for errors
+// (such as context cancellation),
+// but only after iteration is done.
+func ChanContext[T any](ctx context.Context, inp <-chan T) (iter.Seq[T], *error) {
 	var err error
 
 	f := func(yield func(T) bool) {
 		for {
 			select {
-			case <-ctx.Done():
-				err = ctx.Err()
-				return
-
-			case val, ok := <-ch:
+			case val, ok := <-inp:
 				if !ok {
 					return
 				}
 				if !yield(val) {
 					return
 				}
+
+			case <-ctx.Done():
+				err = ctx.Err()
+				return
 			}
 		}
 	}
@@ -39,17 +46,51 @@ func FromChanContext[T any](ctx context.Context, ch <-chan T) (iter.Seq[T], *err
 	return f, &err
 }
 
-func ToChan[T any](f iter.Seq[T]) <-chan T {
+// ToChan launches a goroutine that consumes an iterator and sends it values to a channel.
+func ToChan[T any](inp iter.Seq[T]) <-chan T {
 	ch := make(chan T)
 
 	go func() {
-		for val := range f {
+		for val := range inp {
 			ch <- val
 		}
 		close(ch)
 	}()
 
 	return ch
+}
+
+// ToChanContext launches a goroutine that consumes an iterator and sends it values to a channel.
+// It stops early when the context is canceled.
+//
+// The caller can dereference the returned error pointer to check for errors
+// (such as context cancellation),
+// but only after reaching the end of the channel.
+func ToChanContext[T any](ctx context.Context, f iter.Seq[T]) (<-chan T, *error) {
+	var (
+		ch  = make(chan T)
+		err error
+	)
+
+	go func() {
+		defer close(ch)
+
+		for val := range f {
+			if err = ctx.Err(); err != nil {
+				return
+			}
+			select {
+			case ch <- val:
+				// OK, do nothing.
+
+			case <-ctx.Done():
+				err = ctx.Err()
+				return
+			}
+		}
+	}()
+
+	return ch, &err
 }
 
 // Go runs a function in a goroutine and returns an iterator over the values it produces.
@@ -66,5 +107,5 @@ func Go[T any, F ~func(chan<- T) error](f F) (iter.Seq[T], *error) {
 		close(ch)
 	}()
 
-	return FromChan(ch), &err
+	return Chan(ch), &err
 }

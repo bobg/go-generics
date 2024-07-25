@@ -3,8 +3,20 @@ package seqs
 import (
 	"maps"
 	"slices"
+	"sort"
 	"testing"
 )
+
+func TestFrom(t *testing.T) {
+	var (
+		slice = []int{1, 2, 3}
+		seq   = From(slice...)
+		got   = slices.Collect(seq)
+	)
+	if !slices.Equal(got, slice) {
+		t.Errorf("got %v, want %v", got, slice)
+	}
+}
 
 func TestSeq1(t *testing.T) {
 	var (
@@ -14,6 +26,7 @@ func TestSeq1(t *testing.T) {
 		got  = slices.Collect(seq1)
 		want = []Pair[int, int]{{X: 1, Y: 2}, {X: 3, Y: 4}}
 	)
+	sort.Slice(got, func(i, j int) bool { return got[i].X < got[j].X })
 	if !slices.Equal(got, want) {
 		t.Errorf("got %v, want %v", got, want)
 	}
@@ -43,25 +56,6 @@ func TestSeq2(t *testing.T) {
 		want  = map[int]int{1: 2, 3: 4}
 	)
 	if !maps.Equal(got, want) {
-		t.Errorf("got %v, want %v", got, want)
-	}
-}
-
-func TestChan(t *testing.T) {
-	ch := make(chan int)
-	go func() {
-		for i := 0; i < 3; i++ {
-			ch <- i
-		}
-		close(ch)
-	}()
-
-	var (
-		seq  = Chan(ch)
-		got  = slices.Collect(seq)
-		want = []int{0, 1, 2}
-	)
-	if !slices.Equal(got, want) {
 		t.Errorf("got %v, want %v", got, want)
 	}
 }

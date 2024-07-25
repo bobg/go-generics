@@ -11,6 +11,9 @@ import (
 // This uses a bufio.Scanner
 // and is subject to its default line-length limit
 // (see https://pkg.go.dev/bufio#pkg-constants).
+//
+// The caller can dereference the returned error pointer to check for errors
+// but only after iteration is done.
 func Lines(r io.Reader) (iter.Seq[string], *error) {
 	var err error
 
@@ -33,8 +36,9 @@ func Lines(r io.Reader) (iter.Seq[string], *error) {
 // this does not use a [bufio.Scanner]
 // and is not subject to its default line-length limit.
 // Each reader must be fully consumed before the next one is available.
-// If not consuming all readers from the iterator,
-// the caller should cancel the context to reclaim resources.
+//
+// The caller can dereference the returned error pointer to check for errors
+// but only after iteration is done.
 func LongLines(r io.Reader) (iter.Seq[io.Reader], *error) {
 	br, ok := r.(io.ByteReader)
 	if !ok {
