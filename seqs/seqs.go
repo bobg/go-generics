@@ -2,6 +2,7 @@ package seqs
 
 import "iter"
 
+// Pair is a simple, generic pair of values.
 type Pair[T, U any] struct {
 	X T
 	Y U
