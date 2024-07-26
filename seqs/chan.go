@@ -5,8 +5,8 @@ import (
 	"iter"
 )
 
-// Chan produces an [iter.Seq] over the contents of a channel.
-func Chan[T any](inp <-chan T) iter.Seq[T] {
+// FromChan produces an [iter.Seq] over the contents of a channel.
+func FromChan[T any](inp <-chan T) iter.Seq[T] {
 	return func(yield func(T) bool) {
 		for x := range inp {
 			if !yield(x) {
@@ -16,13 +16,13 @@ func Chan[T any](inp <-chan T) iter.Seq[T] {
 	}
 }
 
-// ChanContext produces an [iter.Seq] over the contents of a channel.
+// FromChanContext produces an [iter.Seq] over the contents of a channel.
 // It stops at the end of the channel or when the given context is canceled.
 //
 // The caller can dereference the returned error pointer to check for errors
 // (such as context cancellation),
 // but only after iteration is done.
-func ChanContext[T any](ctx context.Context, inp <-chan T) (iter.Seq[T], *error) {
+func FromChanContext[T any](ctx context.Context, inp <-chan T) (iter.Seq[T], *error) {
 	var err error
 
 	f := func(yield func(T) bool) {
@@ -76,9 +76,11 @@ func ToChanContext[T any](ctx context.Context, f iter.Seq[T]) (<-chan T, *error)
 		defer close(ch)
 
 		for val := range f {
+			// This extra check helps to ensure that context cancellation "wins" when both cases in the select can proceed.
 			if err = ctx.Err(); err != nil {
 				return
 			}
+
 			select {
 			case ch <- val:
 				// OK, do nothing.
@@ -107,5 +109,5 @@ func Go[T any, F ~func(chan<- T) error](f F) (iter.Seq[T], *error) {
 		close(ch)
 	}()
 
-	return Chan(ch), &err
+	return FromChan(ch), &err
 }

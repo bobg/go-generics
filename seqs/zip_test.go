@@ -10,7 +10,7 @@ func TestZip(t *testing.T) {
 		inp1 = slices.Values([]int{1, 2, 3})
 		inp2 = slices.Values([]string{"a", "b", "c", "d"})
 		z    = Zip(inp1, inp2)
-		z1   = Seq1(z)
+		z1   = ToPairs(z)
 		got  = slices.Collect(z1)
 		want = []Pair[int, string]{{X: 1, Y: "a"}, {X: 2, Y: "b"}, {X: 3, Y: "c"}, {Y: "d"}}
 	)

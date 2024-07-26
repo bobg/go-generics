@@ -26,7 +26,7 @@ func TestToChan(t *testing.T) {
 func TestToChanContext(t *testing.T) {
 	var (
 		ch1  = make(chan int, 1)
-		seq1 = Chan(ch1)
+		seq1 = FromChan(ch1)
 		ctx  = context.Background()
 	)
 	ctx, cancel := context.WithCancel(ctx)
@@ -63,7 +63,7 @@ func TestToChanContext(t *testing.T) {
 	}
 }
 
-func TestChan(t *testing.T) {
+func TestFromChan(t *testing.T) {
 	ch := make(chan int)
 	go func() {
 		for i := 0; i < 3; i++ {
@@ -73,7 +73,7 @@ func TestChan(t *testing.T) {
 	}()
 
 	var (
-		seq  = Chan(ch)
+		seq  = FromChan(ch)
 		got  = slices.Collect(seq)
 		want = []int{0, 1, 2}
 	)
@@ -82,7 +82,7 @@ func TestChan(t *testing.T) {
 	}
 }
 
-func TestChanContext(t *testing.T) {
+func TestFromChanContext(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -98,7 +98,7 @@ func TestChanContext(t *testing.T) {
 		}
 	}()
 
-	it, errptr := ChanContext(ctx, ch)
+	it, errptr := FromChanContext(ctx, ch)
 	next, stop := iter.Pull(it)
 	defer stop()
 	if _, ok := next(); !ok {

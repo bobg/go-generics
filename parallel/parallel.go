@@ -70,9 +70,8 @@ func Values[T any, F ~func(context.Context, int) (T, error)](ctx context.Context
 //
 // The caller gets an iterator over the values produced
 // and a non-nil pointer to an error.
-// Once the iterator has been consumed,
-// the caller may dereference the error pointer to see if any worker failed.
-// There is the risk of a data race if the caller dereferences the error pointer before the iterator is consumed.
+// The caller may dereference the error pointer to see if any worker failed,
+// but not before the iterator has been fully consumed.
 // The error (if there is one) is of type [Error],
 // whose N field indicates which worker failed.
 func Producers[T any, F ~func(context.Context, int, func(T) error) error](ctx context.Context, n int, f F) (iter.Seq[T], *error) {
@@ -104,7 +103,7 @@ func Producers[T any, F ~func(context.Context, int, func(T) error) error](ctx co
 		close(ch)
 	}()
 
-	return seqs.Chan(ch), &err
+	return seqs.FromChan(ch), &err
 }
 
 // Consumers launches n parallel workers each consuming values supplied by the caller.
