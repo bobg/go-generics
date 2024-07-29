@@ -8,7 +8,7 @@ package internal
 // in order to resolve an import cycle
 // that would otherwise exist
 // between iter and slices.
-func RotateSlice[S ~[]T, T any](s S, n int) {
+func RotateSlice[T any, S ~[]T](s S, n int) {
 	if n < 0 {
 		// Convert left-rotation to right-rotation.
 		n = -n

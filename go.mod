@@ -1,6 +1,6 @@
-module github.com/bobg/go-generics/v3
+module github.com/bobg/go-generics/v4
 
-go 1.22
+go 1.23
 
 require (
 	github.com/mattn/go-sqlite3 v1.14.22

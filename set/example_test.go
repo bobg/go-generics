@@ -3,7 +3,7 @@ package set_test
 import (
 	"fmt"
 
-	"github.com/bobg/go-generics/v3/set"
+	"github.com/bobg/go-generics/v4/set"
 )
 
 func ExampleDiff() {

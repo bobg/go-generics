@@ -1,8 +1,6 @@
 package parallel
 
-import (
-	"sync"
-)
+import "sync"
 
 // Protect offers safe concurrent access to a protected value.
 // It is a "share memory by communicating" alternative
@@ -57,7 +55,6 @@ func Protect[T any](val T) (reader func() T, writer func(T), closer func()) {
 		var wg sync.WaitGroup
 
 		for req := range ch {
-			req := req // Go loop var pitfall
 			if req.r != nil {
 				wg.Add(1)
 				go func() {

@@ -2,8 +2,9 @@
 package set
 
 import (
-	"github.com/bobg/go-generics/v3/iter"
-	"github.com/bobg/go-generics/v3/maps"
+	"iter"
+	"maps"
+	"slices"
 )
 
 // Of is a set of elements of type T.
@@ -94,11 +95,11 @@ func (s Of[T]) Eachx(f func(T) error) error {
 	return nil
 }
 
-// Iter produces an iterator over the members of the set,
+// All produces an iterator over the members of the set,
 // in an indeterminate order.
 // The set may be nil.
-func (s Of[T]) Iter() iter.Of[T] {
-	return iter.FromMapKeys(s)
+func (s Of[T]) All() iter.Seq[T] {
+	return maps.Keys(s)
 }
 
 // Slice produces a new slice of the elements in the set.
@@ -107,7 +108,7 @@ func (s Of[T]) Slice() []T {
 	if s.Len() == 0 {
 		return nil
 	}
-	return maps.Keys(s)
+	return slices.Collect(maps.Keys(s))
 }
 
 // Intersect produces a new set containing only items that appear in all the given sets.
