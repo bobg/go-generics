@@ -67,28 +67,27 @@ func (s Of[T]) Equal(other Of[T]) bool {
 	return true
 }
 
-// Exists tests whether the set contains any value for which a function applied
-// to the value returns true. If the function does not return true for any value
-// in the set, Exists returns false. This is the logical inverse of Forall.
-func (s Of[T]) Exists(f func(T) bool) bool {
+// Find returns the first value for which a function applied to the value
+// returns true. If the function does not return true for any value
+// in the set, Find returns false and the zero value of T.
+//
+// if several set elements would match, the first match will be chosen
+// arbitrarily because the iteration order is indeterminate.
+//
+// Find can also be used for two special cases:
+//   - To test whether any value exists that matches the predicate,
+//     a true boolean result is all that matters.
+//   - To test whether any value exists that does not match the predicate,
+//     in this case the inverse function should be supplied and
+//     a false result is all that matters.
+func (s Of[T]) Find(f func(T) bool) (T, bool) {
 	for val := range s {
 		if f(val) {
-			return true
+			return val, true
 		}
 	}
-	return false
-}
-
-// Forall tests whether a given function returns true when applied to all values
-// in the set. If so, Forall returns true, otherwise it returns false. This is the
-// logical inverse of Exists.
-func (s Of[T]) Forall(f func(T) bool) bool {
-	for val := range s {
-		if !f(val) {
-			return false
-		}
-	}
-	return true
+	var zero T
+	return zero, false
 }
 
 // Each calls a function on each element of the set in an indeterminate order.
