@@ -120,6 +120,7 @@ func (s Of[T]) Eachx(f func(T) error) error {
 // Iter produces an iterator over the members of the set,
 // in an indeterminate order.
 // The set may be nil.
+// Note that this makes a copy of the elements in the set.
 func (s Of[T]) Iter() iter.Of[T] {
 	return iter.FromMapKeys(s)
 }
