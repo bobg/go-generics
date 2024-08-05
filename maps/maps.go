@@ -8,10 +8,8 @@
 // in Go 1.21 (https://go.dev/doc/go1.21#maps).
 package maps
 
-import "github.com/bobg/go-generics/v3/iter"
-
 // Each calls a function on each key-value pair in the given map.
-func Each[M ~map[K]V, K comparable, V any](m M, f func(K, V)) {
+func Each[K comparable, V any, M ~map[K]V](m M, f func(K, V)) {
 	_ = Eachx(m, func(k K, v V) error {
 		f(k, v)
 		return nil
@@ -21,7 +19,7 @@ func Each[M ~map[K]V, K comparable, V any](m M, f func(K, V)) {
 // Eachx is the extended form of [Each].
 // It calls a function on each key-value pair in the given map.
 // If the function returns an error, Each exits early with that error.
-func Eachx[M ~map[K]V, K comparable, V any](m M, f func(K, V) error) error {
+func Eachx[K comparable, V any, M ~map[K]V](m M, f func(K, V) error) error {
 	for k, v := range m {
 		err := f(k, v)
 		if err != nil {
@@ -31,21 +29,11 @@ func Eachx[M ~map[K]V, K comparable, V any](m M, f func(K, V) error) error {
 	return nil
 }
 
-// FromPairs produces a new map from an iterator of key-value pairs.
-func FromPairs[K comparable, V any](pairs iter.Of[iter.Pair[K, V]]) (map[K]V, error) {
-	result := make(map[K]V)
-	for pairs.Next() {
-		p := pairs.Val()
-		result[p.X] = p.Y
-	}
-	return result, pairs.Err()
-}
-
 // Invert inverts the key-value pairs in the given map,
 // producing a new map with the values as keys and the keys as values.
 // If any of the values in the input are duplicates,
 // an indeterminate one will survive with its key while the others will be silently dropped.
-func Invert[M ~map[K]V, K, V comparable](m M) map[V]K {
+func Invert[K, V comparable, M ~map[K]V](m M) map[V]K {
 	result := make(map[V]K)
 	for k, v := range m {
 		result[v] = k
@@ -56,7 +44,7 @@ func Invert[M ~map[K]V, K, V comparable](m M) map[V]K {
 // InvertMulti inverts the key-value pairs in the map.
 // It is like Invert but handles duplicate values:
 // the key slice contains all the keys that map to the same value.
-func InvertMulti[M ~map[K]V, K, V comparable](m M) map[V][]K {
+func InvertMulti[K, V comparable, M ~map[K]V](m M) map[V][]K {
 	result := make(map[V][]K)
 	for k, v := range m {
 		result[v] = append(result[v], k)
@@ -64,28 +52,8 @@ func InvertMulti[M ~map[K]V, K, V comparable](m M) map[V][]K {
 	return result
 }
 
-// Keys returns the keys of the map m.
-// The keys will be in an indeterminate order.
-func Keys[M ~map[K]V, K comparable, V any](m M) []K {
-	result := make([]K, 0, len(m))
-	for k := range m {
-		result = append(result, k)
-	}
-	return result
-}
-
-// Values returns the values of the map m.
-// The values will be in an indeterminate order.
-func Values[M ~map[K]V, K comparable, V any](m M) []V {
-	result := make([]V, 0, len(m))
-	for _, v := range m {
-		result = append(result, v)
-	}
-	return result
-}
-
 // Clear removes all entries from m, leaving it empty.
-func Clear[M ~map[K]V, K comparable, V any](m M) {
+func Clear[K comparable, V any, M ~map[K]V](m M) {
 	for k := range m {
 		delete(m, k)
 	}
