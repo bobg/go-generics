@@ -58,14 +58,11 @@ func TestSet(t *testing.T) {
 	}
 
 	var (
-		it = s.Iter()
+		it = s.All()
 		m  = make(map[int]struct{})
 	)
-	for it.Next() {
-		m[it.Val()] = struct{}{}
-	}
-	if err := it.Err(); err != nil {
-		t.Fatal(err)
+	for val := range it {
+		m[val] = struct{}{}
 	}
 	if !reflect.DeepEqual(m, map[int]struct{}{1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}}) {
 		t.Errorf("got %v, want [1 2 3 4 5 6]", m)

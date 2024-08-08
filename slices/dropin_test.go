@@ -1,6 +1,6 @@
-// Adapted from golang.org/x/exp/slices.
+// Adapted from golang.org/x/exp/slices and the Go standard library.
 
-// Copyright 2021 The Go Authors. All rights reserved.
+// Copyright 2021-2024 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
@@ -8,8 +8,10 @@ package slices
 
 import (
 	"cmp"
+	"fmt"
+	"iter"
 	"math"
-	"math/rand"
+	"math/rand/v2"
 	"sort"
 	"strconv"
 	"strings"
@@ -761,7 +763,7 @@ func TestSortLarge_Random(t *testing.T) {
 	}
 	data := make([]int, n)
 	for i := 0; i < len(data); i++ {
-		data[i] = rand.Intn(100)
+		data[i] = rand.IntN(100)
 	}
 	if IsSorted(data) {
 		t.Fatalf("terrible rand.rand")
@@ -791,7 +793,8 @@ func (d intPairs) initB() {
 }
 
 // InOrder checks if a-equal elements were not reordered.
-func (d intPairs) inOrder() bool {
+// If reversed is true, expect reverse ordering.
+func (d intPairs) inOrder(reversed bool) bool {
 	lastA, lastB := -1, 0
 	for i := 0; i < len(d); i++ {
 		if lastA != d[i].a {
@@ -799,8 +802,14 @@ func (d intPairs) inOrder() bool {
 			lastB = d[i].b
 			continue
 		}
-		if d[i].b <= lastB {
-			return false
+		if !reversed {
+			if d[i].b <= lastB {
+				return false
+			}
+		} else {
+			if d[i].b >= lastB {
+				return false
+			}
 		}
 		lastB = d[i].b
 	}
@@ -816,7 +825,7 @@ func TestStability(t *testing.T) {
 
 	// random distribution
 	for i := 0; i < len(data); i++ {
-		data[i].a = rand.Intn(m)
+		data[i].a = rand.IntN(m)
 	}
 	if IsSortedFunc(data, intPairCmp) {
 		t.Fatalf("terrible rand.rand")
@@ -826,7 +835,7 @@ func TestStability(t *testing.T) {
 	if !IsSortedFunc(data, intPairCmp) {
 		t.Errorf("Stable didn't sort %d ints", n)
 	}
-	if !data.inOrder() {
+	if !data.inOrder(false) {
 		t.Errorf("Stable wasn't stable on %d ints", n)
 	}
 
@@ -836,7 +845,7 @@ func TestStability(t *testing.T) {
 	if !IsSortedFunc(data, intPairCmp) {
 		t.Errorf("Stable shuffled sorted %d ints (order)", n)
 	}
-	if !data.inOrder() {
+	if !data.inOrder(false) {
 		t.Errorf("Stable shuffled sorted %d ints (stability)", n)
 	}
 
@@ -849,7 +858,7 @@ func TestStability(t *testing.T) {
 	if !IsSortedFunc(data, intPairCmp) {
 		t.Errorf("Stable didn't sort %d ints", n)
 	}
-	if !data.inOrder() {
+	if !data.inOrder(false) {
 		t.Errorf("Stable wasn't stable on %d ints", n)
 	}
 }
@@ -985,5 +994,406 @@ func TestConcat(t *testing.T) {
 	)
 	if got := Concat(a, b); !Equal(got, want) {
 		t.Errorf("Concat(%v, %v) = %v, want %v", a, b, got, want)
+	}
+}
+
+func TestAll(t *testing.T) {
+	for size := 0; size < 10; size++ {
+		var s []int
+		for i := range size {
+			s = append(s, i)
+		}
+		ei, ev := 0, 0
+		cnt := 0
+		for i, v := range All(s) {
+			if i != ei || v != ev {
+				t.Errorf("at iteration %d got %d, %d want %d, %d", cnt, i, v, ei, ev)
+			}
+			ei++
+			ev++
+			cnt++
+		}
+		if cnt != size {
+			t.Errorf("read %d values expected %d", cnt, size)
+		}
+	}
+}
+
+func TestBackward(t *testing.T) {
+	for size := 0; size < 10; size++ {
+		var s []int
+		for i := range size {
+			s = append(s, i)
+		}
+		ei, ev := size-1, size-1
+		cnt := 0
+		for i, v := range Backward(s) {
+			if i != ei || v != ev {
+				t.Errorf("at iteration %d got %d, %d want %d, %d", cnt, i, v, ei, ev)
+			}
+			ei--
+			ev--
+			cnt++
+		}
+		if cnt != size {
+			t.Errorf("read %d values expected %d", cnt, size)
+		}
+	}
+}
+
+func TestValues(t *testing.T) {
+	for size := 0; size < 10; size++ {
+		var s []int
+		for i := range size {
+			s = append(s, i)
+		}
+		ev := 0
+		cnt := 0
+		for v := range Values(s) {
+			if v != ev {
+				t.Errorf("at iteration %d got %d want %d", cnt, v, ev)
+			}
+			ev++
+			cnt++
+		}
+		if cnt != size {
+			t.Errorf("read %d values expected %d", cnt, size)
+		}
+	}
+}
+
+func testSeq(yield func(int) bool) {
+	for i := 0; i < 10; i += 2 {
+		if !yield(i) {
+			return
+		}
+	}
+}
+
+var testSeqResult = []int{0, 2, 4, 6, 8}
+
+func TestAppendSeq(t *testing.T) {
+	s := AppendSeq([]int{1, 2}, testSeq)
+	want := append([]int{1, 2}, testSeqResult...)
+	if !Equal(s, want) {
+		t.Errorf("got %v, want %v", s, want)
+	}
+}
+
+func TestCollect(t *testing.T) {
+	s := Collect(testSeq)
+	want := testSeqResult
+	if !Equal(s, want) {
+		t.Errorf("got %v, want %v", s, want)
+	}
+}
+
+var iterTests = [][]string{
+	nil,
+	{"a"},
+	{"a", "b"},
+	{"b", "a"},
+	strs[:],
+}
+
+func TestValuesAppendSeq(t *testing.T) {
+	for _, prefix := range iterTests {
+		for _, s := range iterTests {
+			got := AppendSeq(prefix, Values(s))
+			want := append(prefix, s...)
+			if !Equal(got, want) {
+				t.Errorf("AppendSeq(%v, Values(%v)) == %v, want %v", prefix, s, got, want)
+			}
+		}
+	}
+}
+
+func TestValuesCollect(t *testing.T) {
+	for _, s := range iterTests {
+		got := Collect(Values(s))
+		if !Equal(got, s) {
+			t.Errorf("Collect(Values(%v)) == %v, want %v", s, got, s)
+		}
+	}
+}
+
+func TestSorted(t *testing.T) {
+	s := Sorted(Values(ints[:]))
+	if !IsSorted(s) {
+		t.Errorf("sorted %v", ints)
+		t.Errorf("   got %v", s)
+	}
+}
+
+func TestSortedFunc(t *testing.T) {
+	s := SortedFunc(Values(ints[:]), func(a, b int) int { return a - b })
+	if !IsSorted(s) {
+		t.Errorf("sorted %v", ints)
+		t.Errorf("   got %v", s)
+	}
+}
+
+func TestSortedStableFunc(t *testing.T) {
+	n, m := 1000, 100
+	data := make(intPairs, n)
+	for i := range data {
+		data[i].a = rand.IntN(m)
+	}
+	data.initB()
+
+	s := intPairs(SortedStableFunc(Values(data), intPairCmp))
+	if !IsSortedFunc(s, intPairCmp) {
+		t.Errorf("SortedStableFunc didn't sort %d ints", n)
+	}
+	if !s.inOrder(false) {
+		t.Errorf("SortedStableFunc wasn't stable on %d ints", n)
+	}
+
+	// iterVal converts a Seq2 to a Seq.
+	iterVal := func(seq iter.Seq2[int, intPair]) iter.Seq[intPair] {
+		return func(yield func(intPair) bool) {
+			for _, v := range seq {
+				if !yield(v) {
+					return
+				}
+			}
+		}
+	}
+
+	s = intPairs(SortedStableFunc(iterVal(Backward(data)), intPairCmp))
+	if !IsSortedFunc(s, intPairCmp) {
+		t.Errorf("SortedStableFunc didn't sort %d reverse ints", n)
+	}
+	if !s.inOrder(true) {
+		t.Errorf("SortedStableFunc wasn't stable on %d reverse ints", n)
+	}
+}
+
+func TestChunk(t *testing.T) {
+	cases := []struct {
+		name   string
+		s      []int
+		n      int
+		chunks [][]int
+	}{
+		{
+			name:   "nil",
+			s:      nil,
+			n:      1,
+			chunks: nil,
+		},
+		{
+			name:   "empty",
+			s:      []int{},
+			n:      1,
+			chunks: nil,
+		},
+		{
+			name:   "short",
+			s:      []int{1, 2},
+			n:      3,
+			chunks: [][]int{{1, 2}},
+		},
+		{
+			name:   "one",
+			s:      []int{1, 2},
+			n:      2,
+			chunks: [][]int{{1, 2}},
+		},
+		{
+			name:   "even",
+			s:      []int{1, 2, 3, 4},
+			n:      2,
+			chunks: [][]int{{1, 2}, {3, 4}},
+		},
+		{
+			name:   "odd",
+			s:      []int{1, 2, 3, 4, 5},
+			n:      2,
+			chunks: [][]int{{1, 2}, {3, 4}, {5}},
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			var chunks [][]int
+			for c := range Chunk(tc.s, tc.n) {
+				chunks = append(chunks, c)
+			}
+
+			if !chunkEqual(chunks, tc.chunks) {
+				t.Errorf("Chunk(%v, %d) = %v, want %v", tc.s, tc.n, chunks, tc.chunks)
+			}
+
+			if len(chunks) == 0 {
+				return
+			}
+
+			// Verify that appending to the end of the first chunk does not
+			// clobber the beginning of the next chunk.
+			s := Clone(tc.s)
+			chunks[0] = append(chunks[0], -1)
+			if !Equal(s, tc.s) {
+				t.Errorf("slice was clobbered: %v, want %v", s, tc.s)
+			}
+		})
+	}
+}
+
+func TestChunkPanics(t *testing.T) {
+	for _, test := range []struct {
+		name string
+		x    []struct{}
+		n    int
+	}{
+		{
+			name: "cannot be less than 1",
+			x:    make([]struct{}, 0),
+			n:    0,
+		},
+	} {
+		if !panics(func() { _ = Chunk(test.x, test.n) }) {
+			t.Errorf("Chunk %s: got no panic, want panic", test.name)
+		}
+	}
+}
+
+func TestChunkRange(t *testing.T) {
+	// Verify Chunk iteration can be stopped.
+	var got [][]int
+	for c := range Chunk([]int{1, 2, 3, 4, -100}, 2) {
+		if len(got) == 2 {
+			// Found enough values, break early.
+			break
+		}
+
+		got = append(got, c)
+	}
+
+	if want := [][]int{{1, 2}, {3, 4}}; !chunkEqual(got, want) {
+		t.Errorf("Chunk iteration did not stop, got %v, want %v", got, want)
+	}
+}
+
+func chunkEqual[Slice ~[]E, E comparable](s1, s2 []Slice) bool {
+	return EqualFunc(s1, s2, Equal[Slice])
+}
+
+type S struct {
+	a int
+	b string
+}
+
+func cmpS(s1, s2 S) int {
+	return cmp.Compare(s1.a, s2.a)
+}
+
+func TestMinMax(t *testing.T) {
+	intCmp := func(a, b int) int { return a - b }
+
+	tests := []struct {
+		data    []int
+		wantMin int
+		wantMax int
+	}{
+		{[]int{7}, 7, 7},
+		{[]int{1, 2}, 1, 2},
+		{[]int{2, 1}, 1, 2},
+		{[]int{1, 2, 3}, 1, 3},
+		{[]int{3, 2, 1}, 1, 3},
+		{[]int{2, 1, 3}, 1, 3},
+		{[]int{2, 2, 3}, 2, 3},
+		{[]int{3, 2, 3}, 2, 3},
+		{[]int{0, 2, -9}, -9, 2},
+	}
+	for _, tt := range tests {
+		t.Run(fmt.Sprintf("%v", tt.data), func(t *testing.T) {
+			gotMin := Min(tt.data)
+			if gotMin != tt.wantMin {
+				t.Errorf("Min got %v, want %v", gotMin, tt.wantMin)
+			}
+
+			gotMinFunc := MinFunc(tt.data, intCmp)
+			if gotMinFunc != tt.wantMin {
+				t.Errorf("MinFunc got %v, want %v", gotMinFunc, tt.wantMin)
+			}
+
+			gotMax := Max(tt.data)
+			if gotMax != tt.wantMax {
+				t.Errorf("Max got %v, want %v", gotMax, tt.wantMax)
+			}
+
+			gotMaxFunc := MaxFunc(tt.data, intCmp)
+			if gotMaxFunc != tt.wantMax {
+				t.Errorf("MaxFunc got %v, want %v", gotMaxFunc, tt.wantMax)
+			}
+		})
+	}
+
+	svals := []S{
+		{1, "a"},
+		{2, "a"},
+		{1, "b"},
+		{2, "b"},
+	}
+
+	gotMin := MinFunc(svals, cmpS)
+	wantMin := S{1, "a"}
+	if gotMin != wantMin {
+		t.Errorf("MinFunc(%v) = %v, want %v", svals, gotMin, wantMin)
+	}
+
+	gotMax := MaxFunc(svals, cmpS)
+	wantMax := S{2, "a"}
+	if gotMax != wantMax {
+		t.Errorf("MaxFunc(%v) = %v, want %v", svals, gotMax, wantMax)
+	}
+}
+
+func TestMinMaxNaNs(t *testing.T) {
+	fs := []float64{1.0, 999.9, 3.14, -400.4, -5.14}
+	if Min(fs) != -400.4 {
+		t.Errorf("got min %v, want -400.4", Min(fs))
+	}
+	if Max(fs) != 999.9 {
+		t.Errorf("got max %v, want 999.9", Max(fs))
+	}
+
+	// No matter which element of fs is replaced with a NaN, both Min and Max
+	// should propagate the NaN to their output.
+	for i := 0; i < len(fs); i++ {
+		testfs := Clone(fs)
+		testfs[i] = math.NaN()
+
+		fmin := Min(testfs)
+		if !math.IsNaN(fmin) {
+			t.Errorf("got min %v, want NaN", fmin)
+		}
+
+		fmax := Max(testfs)
+		if !math.IsNaN(fmax) {
+			t.Errorf("got max %v, want NaN", fmax)
+		}
+	}
+}
+
+func TestMinMaxPanics(t *testing.T) {
+	intCmp := func(a, b int) int { return a - b }
+	emptySlice := []int{}
+
+	if !panics(func() { Min(emptySlice) }) {
+		t.Errorf("Min([]): got no panic, want panic")
+	}
+
+	if !panics(func() { Max(emptySlice) }) {
+		t.Errorf("Max([]): got no panic, want panic")
+	}
+
+	if !panics(func() { MinFunc(emptySlice, intCmp) }) {
+		t.Errorf("MinFunc([]): got no panic, want panic")
+	}
+
+	if !panics(func() { MaxFunc(emptySlice, intCmp) }) {
+		t.Errorf("MaxFunc([]): got no panic, want panic")
 	}
 }

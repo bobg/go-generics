@@ -3,8 +3,6 @@ package maps
 import (
 	"reflect"
 	"testing"
-
-	"github.com/bobg/go-generics/v3/iter"
 )
 
 var (
@@ -19,23 +17,6 @@ func TestEach(t *testing.T) {
 	})
 	if sum != 118 {
 		t.Errorf("got %d, want 118", sum)
-	}
-}
-
-func TestFromPairs(t *testing.T) {
-	inp := []iter.Pair[int, int]{{
-		X: 1, Y: 2,
-	}, {
-		X: 3, Y: 6,
-	}, {
-		X: 7, Y: 14,
-	}}
-	got, err := FromPairs(iter.FromSlice(inp))
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !reflect.DeepEqual(got, testMap) {
-		t.Errorf("got %v, want %v", got, testMap)
 	}
 }
 
