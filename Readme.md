@@ -1,14 +1,14 @@
 # Go-generics - Generic slice, map, set, iterator, and goroutine utilities for Go
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/bobg/go-generics/v3.svg)](https://pkg.go.dev/github.com/bobg/go-generics/v3)
-[![Go Report Card](https://goreportcard.com/badge/github.com/bobg/go-generics/v3)](https://goreportcard.com/report/github.com/bobg/go-generics/v3)
+[![Go Reference](https://pkg.go.dev/badge/github.com/bobg/go-generics/v4.svg)](https://pkg.go.dev/github.com/bobg/go-generics/v4)
+[![Go Report Card](https://goreportcard.com/badge/github.com/bobg/go-generics/v4)](https://goreportcard.com/report/github.com/bobg/go-generics/v4)
 [![Tests](https://github.com/bobg/go-generics/actions/workflows/go.yml/badge.svg)](https://github.com/bobg/go-generics/actions/workflows/go.yml)
 [![Coverage Status](https://coveralls.io/repos/github/bobg/go-generics/badge.svg?branch=master)](https://coveralls.io/github/bobg/go-generics?branch=master)
 [![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)
 
 This is go-generics,
 a collection of typesafe generic utilities
-for slices, maps, sets, and goroutine patterns in Go.
+for slices, sets, and goroutine patterns in Go.
 
 # Compatibility note
 
@@ -38,14 +38,14 @@ Earlier versions of this library included combinatorial operations in the `slice
 Those have now been moved to their own library,
 [github.com/bobg/combo](https://pkg.go.dev/github.com/bobg/combo).
 
-Earlier versions of this library included two functions,
-`maps.Keys` and `maps.Values`,
-for producing a slice of (respectively) the keys of a map and the values of a map.
-As of Go 1.23,
-the standard library now defines its own `maps.Keys` and `maps.Values`,
-producing iterators instead of slices.
-This library updates those functions to match
-in order for its `maps` to remain a drop-in replacement for the stdlib `maps`.
+Earlier versions of this library included a `maps` package,
+which was a drop-in replacement for the stdlib `maps`
+(added in Go 1.21)
+plus a few convenience functions.
+With the advent of Go 1.23 iterators,
+those few convenience functions are mostly redundant
+(and a couple of them − `Keys` and `Values` − conflict with new functions in the standard library),
+so `maps` has been removed.
 
 # Slices
 
