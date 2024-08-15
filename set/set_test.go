@@ -2,6 +2,7 @@ package set
 
 import (
 	"reflect"
+	"slices"
 	"testing"
 )
 
@@ -101,5 +102,16 @@ func TestEqual(t *testing.T) {
 	}
 	if d.Equal(a) {
 		t.Error("got d == a")
+	}
+}
+
+func TestCollect(t *testing.T) {
+	var (
+		nums = slices.Values([]int{1, 2, 3, 4, 5, 6})
+		got  = Collect(nums)
+		want = New[int](1, 2, 3, 4, 5, 6)
+	)
+	if !got.Equal(want) {
+		t.Errorf("got %v, want %v", got, want)
 	}
 }

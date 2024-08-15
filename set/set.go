@@ -25,11 +25,25 @@ func New[T comparable](vals ...T) Of[T] {
 	return Of[T](s)
 }
 
+// Collect collects the members of the given sequence into a new set.
+func Collect[T comparable](inp iter.Seq[T]) Of[T] {
+	s := New[T]()
+	s.AddSeq(inp)
+	return s
+}
+
 // Add adds the given values to the set.
 // Items already present in the set are silently ignored.
 func (s Of[T]) Add(vals ...T) {
 	for _, val := range vals {
 		s[val] = struct{}{}
+	}
+}
+
+// AddSeq adds the members of the given sequence to the set.
+func (s Of[T]) AddSeq(inp iter.Seq[T]) {
+	for val := range inp {
+		s.Add(val)
 	}
 }
 
@@ -72,7 +86,7 @@ func (s Of[T]) Equal(other Of[T]) bool {
 // returns true. If the function does not return true for any value
 // in the set, Find returns false and the zero value of T.
 //
-// if several set elements would match, the first match will be chosen
+// If several set elements would match, the first match will be chosen
 // arbitrarily because the iteration order is indeterminate.
 //
 // Find can also be used for two special cases:
