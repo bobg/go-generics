@@ -82,29 +82,6 @@ func (s Of[T]) Equal(other Of[T]) bool {
 	return true
 }
 
-// Find returns the first value for which a function applied to the value
-// returns true. If the function does not return true for any value
-// in the set, Find returns false and the zero value of T.
-//
-// If several set elements would match, the first match will be chosen
-// arbitrarily because the iteration order is indeterminate.
-//
-// Find can also be used for two special cases:
-//   - To test whether any value exists that matches the predicate,
-//     a true boolean result is all that matters.
-//   - To test whether any value exists that does not match the predicate,
-//     in this case the inverse function should be supplied and
-//     a false result is all that matters.
-func (s Of[T]) Find(f func(T) bool) (T, bool) {
-	for val := range s {
-		if f(val) {
-			return val, true
-		}
-	}
-	var zero T
-	return zero, false
-}
-
 // Each calls a function on each element of the set in an indeterminate order.
 // It is safe to add and remove items during a call to Each,
 // but that can affect the sequence of values seen later during the same Each call.

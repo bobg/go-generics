@@ -47,6 +47,11 @@ those few convenience functions are mostly redundant
 (and a couple of them − `Keys` and `Values` − conflict with new functions in the standard library),
 so `maps` has been removed.
 
+Earlier versions of this library included a `Find` method on the `set.Of[T]` type,
+for finding some element in the set that satisfies a given predicate.
+This method has been removed in favor of composing operations with functions from [github.com/bobg/seqs](https://pkg.go.dev/github.com/bobg/seqs).
+For example, `s.Find(pred)` can now be written as `seqs.First(seqs.Filter(s.All(), pred))`.
+
 # Slices
 
 The `slices` package is useful in three ways:
@@ -65,17 +70,6 @@ There is one difference:
 this version of `slices`
 allows the index value passed to `Insert`, `Delete`, and `Replace`
 to be negative for counting backward from the end of the slice.
-
-# Maps
-
-The `maps` package has a few convenience functions
-for duplicating, inverting, constructing, and iterating over maps,
-as well as for testing their equality.
-
-The `maps` package is a drop-in replacement
-for the `maps` package
-added to the Go stdlib
-in [Go 1.21](https://go.dev/doc/go1.21#maps).
 
 # Set
 
