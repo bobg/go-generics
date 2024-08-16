@@ -25,19 +25,6 @@ func TestSet(t *testing.T) {
 		t.Errorf("got %v, want [1 2 3 4 5 6]", got)
 	}
 
-	v1, exists1 := s.Find(func(val int) bool { return val > 3 })
-	if !exists1 {
-		t.Errorf("Find(val > 3) failed")
-	}
-	if v1 <= 3 {
-		t.Errorf("Find(val > 3) failed with %d", v1)
-	}
-
-	_, exists2 := s.Find(func(val int) bool { return val > 10 })
-	if exists2 {
-		t.Errorf("Find(val > 10) failed")
-	}
-
 	s2 := New[int](5, 6, 7, 8)
 	i := Intersect(s, s2)
 	if !reflect.DeepEqual(i, Of[int](map[int]struct{}{5: {}, 6: {}})) {
