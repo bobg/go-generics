@@ -2,6 +2,7 @@ package slices
 
 import (
 	"cmp"
+	"iter"
 	"slices"
 )
 
@@ -204,4 +205,51 @@ func BinarySearchFunc[S ~[]E, E, T any](x S, target T, cmp func(E, T) int) (int,
 // Concat returns a new slice concatenating the passed in slices.
 func Concat[S ~[]E, E any](s ...S) S {
 	return slices.Concat(s...)
+}
+
+// The following are new for Go 1.23.
+
+// All returns an iterator over index-value pairs in the slice in the usual order.
+func All[Slice ~[]E, E any](s Slice) iter.Seq2[int, E] {
+	return slices.All(s)
+}
+
+// Values returns an iterator that yields the slice elements in order.
+func Values[Slice ~[]E, E any](s Slice) iter.Seq[E] {
+	return slices.Values(s)
+}
+
+// Backward returns an iterator over index-value pairs in the slice, traversing it backward with descending indices.
+func Backward[Slice ~[]E, E any](s Slice) iter.Seq2[int, E] {
+	return slices.Backward(s)
+}
+
+// Collect collects values from seq into a new slice and returns it.
+func Collect[E any](seq iter.Seq[E]) []E {
+	return slices.Collect(seq)
+}
+
+// AppendSeq appends the values from seq to the slice and returns the extended slice.
+func AppendSeq[Slice ~[]E, E any](s Slice, seq iter.Seq[E]) Slice {
+	return slices.AppendSeq(s, seq)
+}
+
+// Sorted collects values from seq into a new slice, sorts the slice, and returns it.
+func Sorted[E cmp.Ordered](seq iter.Seq[E]) []E {
+	return slices.Sorted(seq)
+}
+
+// SortedFunc collects values from seq into a new slice, sorts the slice using the comparison function, and returns it.
+func SortedFunc[E any](seq iter.Seq[E], cmp func(E, E) int) []E {
+	return slices.SortedFunc(seq, cmp)
+}
+
+// SortedStableFunc collects values from seq into a new slice. It then sorts the slice while keeping the original order of equal elements, using the comparison function to compare elements. It returns the new slice.
+func SortedStableFunc[E any](seq iter.Seq[E], cmp func(E, E) int) []E {
+	return slices.SortedStableFunc(seq, cmp)
+}
+
+// Chunk returns an iterator over consecutive sub-slices of up to n elements of s. All but the last sub-slice will have size n. All sub-slices are clipped to have no capacity beyond the length. If s is empty, the sequence is empty: there is no empty slice in the sequence. Chunk panics if n is less than 1.
+func Chunk[Slice ~[]E, E any](s Slice, n int) iter.Seq[Slice] {
+	return slices.Chunk(s, n)
 }

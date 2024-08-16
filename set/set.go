@@ -2,8 +2,9 @@
 package set
 
 import (
-	"github.com/bobg/go-generics/v3/iter"
-	"github.com/bobg/go-generics/v3/maps"
+	"iter"
+	"maps"
+	"slices"
 )
 
 // Of is a set of elements of type T.
@@ -24,11 +25,25 @@ func New[T comparable](vals ...T) Of[T] {
 	return Of[T](s)
 }
 
+// Collect collects the members of the given sequence into a new set.
+func Collect[T comparable](inp iter.Seq[T]) Of[T] {
+	s := New[T]()
+	s.AddSeq(inp)
+	return s
+}
+
 // Add adds the given values to the set.
 // Items already present in the set are silently ignored.
 func (s Of[T]) Add(vals ...T) {
 	for _, val := range vals {
 		s[val] = struct{}{}
+	}
+}
+
+// AddSeq adds the members of the given sequence to the set.
+func (s Of[T]) AddSeq(inp iter.Seq[T]) {
+	for val := range inp {
+		s.Add(val)
 	}
 }
 
@@ -67,29 +82,6 @@ func (s Of[T]) Equal(other Of[T]) bool {
 	return true
 }
 
-// Find returns the first value for which a function applied to the value
-// returns true. If the function does not return true for any value
-// in the set, Find returns false and the zero value of T.
-//
-// if several set elements would match, the first match will be chosen
-// arbitrarily because the iteration order is indeterminate.
-//
-// Find can also be used for two special cases:
-//   - To test whether any value exists that matches the predicate,
-//     a true boolean result is all that matters.
-//   - To test whether any value exists that does not match the predicate,
-//     in this case the inverse function should be supplied and
-//     a false result is all that matters.
-func (s Of[T]) Find(f func(T) bool) (T, bool) {
-	for val := range s {
-		if f(val) {
-			return val, true
-		}
-	}
-	var zero T
-	return zero, false
-}
-
 // Each calls a function on each element of the set in an indeterminate order.
 // It is safe to add and remove items during a call to Each,
 // but that can affect the sequence of values seen later during the same Each call.
@@ -117,12 +109,11 @@ func (s Of[T]) Eachx(f func(T) error) error {
 	return nil
 }
 
-// Iter produces an iterator over the members of the set,
+// All produces an iterator over the members of the set,
 // in an indeterminate order.
 // The set may be nil.
-// Note that this makes a copy of the elements in the set.
-func (s Of[T]) Iter() iter.Of[T] {
-	return iter.FromMapKeys(s)
+func (s Of[T]) All() iter.Seq[T] {
+	return maps.Keys(s)
 }
 
 // Slice produces a new slice of the elements in the set.
@@ -131,7 +122,7 @@ func (s Of[T]) Slice() []T {
 	if s.Len() == 0 {
 		return nil
 	}
-	return maps.Keys(s)
+	return slices.Collect(s.All())
 }
 
 // Intersect produces a new set containing only items that appear in all the given sets.

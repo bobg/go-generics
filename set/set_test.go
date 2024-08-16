@@ -2,6 +2,7 @@ package set
 
 import (
 	"reflect"
+	"slices"
 	"testing"
 )
 
@@ -22,19 +23,6 @@ func TestSet(t *testing.T) {
 	s.Each(func(val int) { got[val] = struct{}{} })
 	if !reflect.DeepEqual(got, map[int]struct{}{1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}}) {
 		t.Errorf("got %v, want [1 2 3 4 5 6]", got)
-	}
-
-	v1, exists1 := s.Find(func(val int) bool { return val > 3 })
-	if !exists1 {
-		t.Errorf("Find(val > 3) failed")
-	}
-	if v1 <= 3 {
-		t.Errorf("Find(val > 3) failed with %d", v1)
-	}
-
-	_, exists2 := s.Find(func(val int) bool { return val > 10 })
-	if exists2 {
-		t.Errorf("Find(val > 10) failed")
 	}
 
 	s2 := New[int](5, 6, 7, 8)
@@ -58,14 +46,11 @@ func TestSet(t *testing.T) {
 	}
 
 	var (
-		it = s.Iter()
+		it = s.All()
 		m  = make(map[int]struct{})
 	)
-	for it.Next() {
-		m[it.Val()] = struct{}{}
-	}
-	if err := it.Err(); err != nil {
-		t.Fatal(err)
+	for val := range it {
+		m[val] = struct{}{}
 	}
 	if !reflect.DeepEqual(m, map[int]struct{}{1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {}}) {
 		t.Errorf("got %v, want [1 2 3 4 5 6]", m)
@@ -104,5 +89,16 @@ func TestEqual(t *testing.T) {
 	}
 	if d.Equal(a) {
 		t.Error("got d == a")
+	}
+}
+
+func TestCollect(t *testing.T) {
+	var (
+		nums = slices.Values([]int{1, 2, 3, 4, 5, 6})
+		got  = Collect(nums)
+		want = New[int](1, 2, 3, 4, 5, 6)
+	)
+	if !got.Equal(want) {
+		t.Errorf("got %v, want %v", got, want)
 	}
 }
