@@ -2,6 +2,8 @@ github.com/bobg/go-generics/v3 v3.7.0 h1:4SJHDWqONTRcA8al6491VW/ys6061bPCcTcI7Yn
 github.com/bobg/go-generics/v3 v3.7.0/go.mod h1:wGlMLQER92clsh3cJoQjbUtUEJ03FoxnGhZjaWhf4fM=
 github.com/bobg/seqs v1.0.0 h1:BcBwTAMX9DKkKPx6Q7+uiZwuMw2/Pj3c2HZA9nJBPag=
 github.com/bobg/seqs v1.0.0/go.mod h1:icgB+vXIoU6s675tLYVAgcUYry1PkYwgEKvzOuFemOk=
+github.com/bobg/seqs v1.2.0 h1:y9SS1zisfkNQepd+xia/3ELDYR4T4vuLTyCA4UVOiKA=
+github.com/bobg/seqs v1.2.0/go.mod h1:icgB+vXIoU6s675tLYVAgcUYry1PkYwgEKvzOuFemOk=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
 github.com/mattn/go-sqlite3 v1.14.22 h1:2gZY6PC6kBnID23Tichd1K+Z0oS6nE/XwU+Vz/5o4kU=
