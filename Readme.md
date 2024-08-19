@@ -79,15 +79,6 @@ as well as member functions for adding and removing items,
 checking for the presence of items,
 and iterating over items.
 
-# Iter
-
-The `iter` package implements efficient, typesafe iterators
-that can convert to and from Go slices, maps, and channels,
-and produce iterators over the values from function calls and goroutines.
-There is also an iterator over the results of a SQL query;
-the usual collection of functions on iterators
-(`Filter`, `Map`, `Concat`, `Accum`, etc.).
-
 # Parallel
 
 The `parallel` package contains functions for coordinating parallel workers:
