@@ -8,8 +8,6 @@ import (
 	"sync"
 
 	"golang.org/x/sync/errgroup"
-
-	"github.com/bobg/seqs"
 )
 
 // Error is an error type for wrapping errors returned from worker goroutines.
@@ -103,7 +101,17 @@ func Producers[T any](ctx context.Context, n int, f func(context.Context, int, f
 		close(ch)
 	}()
 
-	return seqs.FromChan(ch), &err
+	// This could be FromSeq(ch),
+	// but that would introduce a circular dependency on github.com/bobg/seqs.
+	fromSeq := func(yield func(T) bool) {
+		for x := range ch {
+			if !yield(x) {
+				return
+			}
+		}
+	}
+
+	return fromSeq, &err
 }
 
 // Consumers launches n parallel workers each consuming values supplied by the caller.
