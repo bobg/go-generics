@@ -166,6 +166,15 @@ func Prefix[T any, S ~[]T](s S, idx int) S {
 	return s[:idx]
 }
 
+// PrefixFunc returns the longest prefix of s whose elements all satisfy the given predicate.
+func PrefixFunc[T any, S ~[]T](s S, f func(T) bool) S {
+	idx := IndexFunc(s, invert(f))
+	if idx < 0 {
+		return s
+	}
+	return s[:idx]
+}
+
 // Suffix returns s excluding elements before position idx.
 //
 // If idx < 0 it counts from the end of s.
@@ -174,6 +183,42 @@ func Suffix[T any, S ~[]T](s S, idx int) S {
 		idx += len(s)
 	}
 	return s[idx:]
+}
+
+// Rindex returns the index of the last occurrence of v in s, or -1 if not present.
+func Rindex[T comparable, S ~[]T](s S, v T) int {
+	for i := len(s) - 1; i >= 0; i-- {
+		if s[i] == v {
+			return i
+		}
+	}
+	return -1
+}
+
+// RindexFunc returns the index of the last element in s that satisfies the given predicate,
+// or -1 if no such element exists.
+func RindexFunc[T any, S ~[]T](s S, f func(T) bool) int {
+	for i := len(s) - 1; i >= 0; i-- {
+		if f(s[i]) {
+			return i
+		}
+	}
+	return -1
+}
+
+// SuffixFunc returns the longest suffix of s whose elements all satisfy the given predicate.
+func SuffixFunc[T any, S ~[]T](s S, f func(T) bool) S {
+	idx := RindexFunc(s, invert(f))
+	if idx < 0 {
+		return s
+	}
+	return s[idx+1:]
+}
+
+func invert[T any](pred func(T) bool) func(T) bool {
+	return func(val T) bool {
+		return !pred(val)
+	}
 }
 
 // SliceN returns n elements of s beginning at position idx.
