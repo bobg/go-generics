@@ -57,7 +57,7 @@ func TestConsumers(t *testing.T) {
 		got = set.New[int]()
 	)
 
-	sendfn, closefn := Consumers(context.Background(), 10, func(_ context.Context, n, val int) error {
+	sendfn, closefn := Consumers(context.Background(), 10, func(_ context.Context, _, val int) error {
 		mu.Lock()
 		got.Add(val)
 		mu.Unlock()
