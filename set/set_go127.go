@@ -8,6 +8,10 @@ import (
 )
 
 func (s Of[T]) MarshalJSONTo(enc *jsontext.Encoder) error {
+	if s == nil {
+		return enc.WriteToken(jsontext.Null)
+	}
+
 	if err := enc.WriteToken(jsontext.BeginArray); err != nil {
 		return err
 	}
@@ -22,8 +26,14 @@ func (s Of[T]) MarshalJSONTo(enc *jsontext.Encoder) error {
 }
 
 func (s *Of[T]) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	if k := dec.PeekKind(); k != '[' {
-		return &json.SemanticError{JSONKind: k}
+	switch dec.PeekKind() {
+	case jsontext.KindBeginArray:
+	case jsontext.KindNull:
+		*s = nil
+		_, err := dec.ReadToken()
+		return err
+	default:
+		return &json.SemanticError{JSONKind: dec.PeekKind()}
 	}
 
 	if _, err := dec.ReadToken(); err != nil {
