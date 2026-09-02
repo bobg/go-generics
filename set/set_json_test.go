@@ -1,5 +1,3 @@
-//go:build go1.27
-
 package set_test
 
 import (
@@ -12,15 +10,24 @@ func TestSetJSON(t *testing.T) {
 	t.Parallel()
 
 	testData := []struct {
-		name    string
-		set     set.Of[string]
-		json    string
-		jsonAlt string
+		name          string
+		set           set.Of[string]
+		json          string
+		jsonAlt       string
+		unmarshalOnly bool
+		marshalOnly   bool
 	}{
 		{
-			name: "null",
-			set:  nil,
-			json: `null`,
+			name:          "null",
+			set:           make(set.Of[string]),
+			json:          `null`,
+			unmarshalOnly: true, // this doesn't round trip
+		},
+		{
+			name:        "nil",
+			set:         nil,
+			json:        `[]`,
+			marshalOnly: true, // this doesn't round trip
 		},
 		{
 			name: "empty",
@@ -50,6 +57,10 @@ func TestSetJSON(t *testing.T) {
 			t.Run("marshal", func(t *testing.T) {
 				t.Parallel()
 
+				if d.unmarshalOnly {
+					t.SkipNow()
+				}
+
 				b, err := json.Marshal(d.set)
 				if err != nil {
 					t.Fatal("unexpected error:", err)
@@ -62,6 +73,10 @@ func TestSetJSON(t *testing.T) {
 
 			t.Run("unmarshal", func(t *testing.T) {
 				t.Parallel()
+
+				if d.marshalOnly {
+					t.SkipNow()
+				}
 
 				var s set.Of[string]
 				err := json.Unmarshal([]byte(d.json), &s)
