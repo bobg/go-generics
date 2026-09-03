@@ -27,8 +27,7 @@ func TestValues(t *testing.T) {
 func TestProducers(t *testing.T) {
 	it, errptr := Producers(context.Background(), 10, func(_ context.Context, n int, send func(int) error) error {
 		for i := 0; i < 10; i++ {
-			err := send(10*n + i)
-			if err != nil {
+			if err := send(10*n + i); err != nil {
 				return err
 			}
 		}
