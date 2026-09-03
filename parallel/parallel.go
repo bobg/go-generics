@@ -38,7 +38,7 @@ func Values[T any](ctx context.Context, n int, f func(context.Context, int) (T, 
 	g, ctx := errgroup.WithContext(ctx)
 	result := make([]T, n)
 
-	for i := 0; i < n; i++ {
+	for i := range n {
 		g.Go(func() error {
 			val, err := f(ctx, i)
 			result[i] = val
@@ -76,7 +76,7 @@ func Producers[T any](ctx context.Context, n int, f func(context.Context, int, f
 	ch := make(chan T)
 	g, innerCtx := errgroup.WithContext(ctx)
 
-	for i := 0; i < n; i++ {
+	for i := range n {
 		i := i
 		g.Go(func() error {
 			err := f(innerCtx, i, func(val T) error {
@@ -139,7 +139,7 @@ func Consumers[T any](ctx context.Context, n int, f func(context.Context, int, T
 
 	g, ctx := errgroup.WithContext(ctx)
 
-	for i := 0; i < n; i++ {
+	for i := range n {
 		i := i
 		g.Go(func() error {
 			for {

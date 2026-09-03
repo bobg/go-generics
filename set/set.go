@@ -101,8 +101,7 @@ func (s Of[T]) Each(f func(T)) {
 // Eachx stops and returns that error.
 func (s Of[T]) Eachx(f func(T) error) error {
 	for val := range s {
-		err := f(val)
-		if err != nil {
+		if err := f(val); err != nil {
 			return err
 		}
 	}

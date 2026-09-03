@@ -83,15 +83,13 @@ func ExamplePool() {
 
 	// Ten goroutines requesting work from those three workers.
 	for i := 1; i <= 10; i++ {
-		wg.Add(1)
-		go func() {
+		wg.Go(func() {
 			neg, err := pool(i)
 			if err != nil {
 				panic(err)
 			}
 			fmt.Println(neg)
-			wg.Done()
-		}()
+		})
 	}
 
 	wg.Wait()
@@ -118,12 +116,10 @@ func ExampleProtect() {
 
 	// Call the reader in three concurrent goroutines, each printing the protected value.
 	var wg sync.WaitGroup
-	for i := 0; i < 3; i++ {
-		wg.Add(1)
-		go func() {
+	for range 3 {
+		wg.Go(func() {
 			fmt.Println(reader())
-			wg.Done()
-		}()
+		})
 	}
 	wg.Wait()
 
@@ -131,12 +127,10 @@ func ExampleProtect() {
 	writer(reader() + 1)
 
 	// Call the reader in three concurrent goroutines, each printing the protected value.
-	for i := 0; i < 3; i++ {
-		wg.Add(1)
-		go func() {
+	for range 3 {
+		wg.Go(func() {
 			fmt.Println(reader())
-			wg.Done()
-		}()
+		})
 	}
 	wg.Wait()
 
