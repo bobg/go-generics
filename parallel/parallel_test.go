@@ -17,7 +17,7 @@ func TestValues(t *testing.T) {
 	if len(got) != 100 {
 		t.Errorf("got len %d, want 100", len(got))
 	}
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		if got[i] != i {
 			t.Errorf("got[%d] is %d, want %d", i, got[i], i)
 		}
@@ -26,7 +26,7 @@ func TestValues(t *testing.T) {
 
 func TestProducers(t *testing.T) {
 	it, errptr := Producers(context.Background(), 10, func(_ context.Context, n int, send func(int) error) error {
-		for i := 0; i < 10; i++ {
+		for i := range 10 {
 			if err := send(10*n + i); err != nil {
 				return err
 			}
@@ -43,7 +43,7 @@ func TestProducers(t *testing.T) {
 	if got.Len() != 100 {
 		t.Errorf("got %d values, want 100", got.Len())
 	}
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		if !got.Has(i) {
 			t.Errorf("%d missing from result", i)
 		}
@@ -62,7 +62,7 @@ func TestConsumers(t *testing.T) {
 		mu.Unlock()
 		return nil
 	})
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		err := sendfn(i)
 		if err != nil {
 			t.Fatal(err)
@@ -75,7 +75,7 @@ func TestConsumers(t *testing.T) {
 	if got.Len() != 100 {
 		t.Errorf("got %d values, want 100", got.Len())
 	}
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		if !got.Has(i) {
 			t.Errorf("%d missing from result", i)
 		}
@@ -111,9 +111,8 @@ func TestPool(t *testing.T) {
 		errch = make(chan error, 100)
 		wg    sync.WaitGroup
 	)
-	for i := 0; i < 100; i++ {
-		wg.Add(1)
-		go func() {
+	for i := range 100 {
+		wg.Go(func() {
 			got, err := call(i)
 			if err != nil {
 				errch <- err
@@ -121,11 +120,10 @@ func TestPool(t *testing.T) {
 			if got != i {
 				errch <- fmt.Errorf("got %d, want %d", got, i)
 			}
-			wg.Done()
-		}()
+		})
 	}
 
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		mu.Lock()
 		unblocked[i] = true
 		cond.Broadcast()
