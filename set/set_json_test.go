@@ -2,8 +2,9 @@ package set_test
 
 import (
 	"encoding/json/v2"
-	"github.com/bobg/go-generics/v4/set"
 	"testing"
+
+	"github.com/bobg/go-generics/v4/set"
 )
 
 func TestSetJSON(t *testing.T) {

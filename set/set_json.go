@@ -2,6 +2,7 @@ package set
 
 import (
 	"encoding/json/jsontext"
+
 	"github.com/bobg/seqs"
 )
 
