@@ -20,7 +20,7 @@ func TestSetJSON(t *testing.T) {
 	}{
 		{
 			name:          "null",
-			set:           make(set.Of[string]),
+			set:           set.New[string](),
 			json:          `null`,
 			unmarshalOnly: true, // this doesn't round trip
 		},
@@ -32,7 +32,7 @@ func TestSetJSON(t *testing.T) {
 		},
 		{
 			name: "empty",
-			set:  make(set.Of[string]),
+			set:  set.New[string](),
 			json: `[]`,
 		},
 		{
