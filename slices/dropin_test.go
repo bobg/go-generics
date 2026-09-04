@@ -762,7 +762,7 @@ func TestSortLarge_Random(t *testing.T) {
 		n /= 100
 	}
 	data := make([]int, n)
-	for i := 0; i < len(data); i++ {
+	for i := range data {
 		data[i] = rand.IntN(100)
 	}
 	if IsSorted(data) {
@@ -796,7 +796,7 @@ func (d intPairs) initB() {
 // If reversed is true, expect reverse ordering.
 func (d intPairs) inOrder(reversed bool) bool {
 	lastA, lastB := -1, 0
-	for i := 0; i < len(d); i++ {
+	for i := range d {
 		if lastA != d[i].a {
 			lastA = d[i].a
 			lastB = d[i].b
@@ -824,7 +824,7 @@ func TestStability(t *testing.T) {
 	data := make(intPairs, n)
 
 	// random distribution
-	for i := 0; i < len(data); i++ {
+	for i := range data {
 		data[i].a = rand.IntN(m)
 	}
 	if IsSortedFunc(data, intPairCmp) {
@@ -850,7 +850,7 @@ func TestStability(t *testing.T) {
 	}
 
 	// sorted reversed
-	for i := 0; i < len(data); i++ {
+	for i := range data {
 		data[i].a = len(data) - i
 	}
 	data.initB()
@@ -998,7 +998,7 @@ func TestConcat(t *testing.T) {
 }
 
 func TestAll(t *testing.T) {
-	for size := 0; size < 10; size++ {
+	for size := range 10 {
 		var s []int
 		for i := range size {
 			s = append(s, i)
@@ -1020,7 +1020,7 @@ func TestAll(t *testing.T) {
 }
 
 func TestBackward(t *testing.T) {
-	for size := 0; size < 10; size++ {
+	for size := range 10 {
 		var s []int
 		for i := range size {
 			s = append(s, i)
@@ -1042,7 +1042,7 @@ func TestBackward(t *testing.T) {
 }
 
 func TestValues(t *testing.T) {
-	for size := 0; size < 10; size++ {
+	for size := range 10 {
 		var s []int
 		for i := range size {
 			s = append(s, i)
@@ -1361,7 +1361,7 @@ func TestMinMaxNaNs(t *testing.T) {
 
 	// No matter which element of fs is replaced with a NaN, both Min and Max
 	// should propagate the NaN to their output.
-	for i := 0; i < len(fs); i++ {
+	for i := range fs {
 		testfs := Clone(fs)
 		testfs[i] = math.NaN()
 

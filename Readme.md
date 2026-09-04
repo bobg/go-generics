@@ -1,7 +1,6 @@
 # Go-generics - Generic slice, map, set, iterator, and goroutine utilities for Go
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/bobg/go-generics/v4.svg)](https://pkg.go.dev/github.com/bobg/go-generics/v4)
-[![Go Report Card](https://goreportcard.com/badge/github.com/bobg/go-generics/v4)](https://goreportcard.com/report/github.com/bobg/go-generics/v4)
 [![Tests](https://github.com/bobg/go-generics/actions/workflows/go.yml/badge.svg)](https://github.com/bobg/go-generics/actions/workflows/go.yml)
 [![Coverage Status](https://coveralls.io/repos/github/bobg/go-generics/badge.svg?branch=master)](https://coveralls.io/github/bobg/go-generics?branch=master)
 [![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)
