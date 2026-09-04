@@ -6,20 +6,17 @@ import (
 	"github.com/bobg/seqs"
 )
 
+// MarshalJSONTo implements ["encoding/json/v2".MarshalerTo].
 func (s Of[T]) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return seqs.JSONMarshalEncode(enc, s.All())
 }
 
+// UnmarshalJSONFrom implements ["encoding/json/v2".UnmarshalerFrom].
 func (s *Of[T]) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	seq, err := seqs.JSONUnmarshalDecode[T](dec)
-	if *err != nil {
-		return *err
-	}
-
+	seq, errptr := seqs.JSONUnmarshalDecode[T](dec)
 	if *s == nil {
-		*s = make(Of[T])
+		*s = New[T]()
 	}
-
 	s.AddSeq(seq)
-	return *err
+	return *errptr
 }
